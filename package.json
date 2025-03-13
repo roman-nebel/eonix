@@ -1,0 +1,9 @@
+{
+  "name": "chronos",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "keywords": [],
+  "author": "Roman Nebel",
+  "license": "MIT"
+}
