@@ -3,21 +3,23 @@ export default class Chronos extends Date {
     super(date);
   }
 
-  static getDiff(date1, date2, options = {}) {
-    const { withWeeks = false, withMonths = true, absolute = false } = options;
-
-    const [start, end] = absolute
+  static createSortedDates(date1, date2, absolute) {
+    return absolute
       ? [new Chronos(date1), new Chronos(date2)].sort()
       : [new Chronos(date1), new Chronos(date2)];
+  }
+
+  static getDiff(date1, date2, options = {}) {
+    const { withWeeks = false, withMonths = true, absolute = false } = options;
+    const [start, end] = Chronos.createSortedDates(date1, date2, absolute);
 
     let years = end.getFullYear() - start.getFullYear();
-    let monthsCount = 0;
-    let weeksCount = 0;
-    let daysCount = 0;
-
+    let monthsCount = 0,
+      weeksCount = 0,
+      daysCount = 0;
     let tempDate = new Chronos(start);
 
-    tempDate.setFullYear(start.getFullYear() + years);
+    tempDate.setFullYear(tempDate.getFullYear() + years);
     if (tempDate > end) {
       years--;
       tempDate.setFullYear(tempDate.getFullYear() - 1);
@@ -25,181 +27,86 @@ export default class Chronos extends Date {
 
     if (withMonths) {
       while (tempDate <= end) {
-        let nextMonth = new Date(tempDate);
-        nextMonth.setMonth(tempDate.getMonth() + 1);
-        if (nextMonth > end) break;
-        tempDate = nextMonth;
+        tempDate.setMonth(tempDate.getMonth() + 1);
+        if (tempDate > end) break;
         monthsCount++;
       }
     }
 
     if (withWeeks) {
-      let remainingDays = Math.floor((end - tempDate) / (1000 * 60 * 60 * 24));
-      weeksCount = Math.floor(remainingDays / 7);
-      daysCount = remainingDays % 7;
+      daysCount = Math.floor((end - tempDate) / (1000 * 60 * 60 * 24));
+      weeksCount = Math.floor(daysCount / 7);
+      daysCount %= 7;
       tempDate.setDate(tempDate.getDate() + weeksCount * 7 + daysCount);
-    }
-
-    if (!withMonths && !withWeeks) {
+    } else if (!withMonths) {
       daysCount = Math.floor((end - tempDate) / (1000 * 60 * 60 * 24));
       tempDate.setDate(tempDate.getDate() + daysCount);
     }
 
-    let diffMs = end - tempDate;
-    let hours = Math.floor(diffMs / (1000 * 60 * 60));
-    diffMs -= hours * 1000 * 60 * 60;
-
-    let minutes = Math.floor(diffMs / (1000 * 60));
-    diffMs -= minutes * 1000 * 60;
-
-    let seconds = Math.floor(diffMs / 1000);
-    let milliseconds = diffMs - seconds * 1000;
-
+    const diffMs = end - tempDate;
     return {
       years,
-      months: months ? monthsCount : undefined,
-      weeks: weeks ? weeksCount : undefined,
+      months: withMonths ? monthsCount : undefined,
+      weeks: withWeeks ? weeksCount : undefined,
       days: daysCount,
-      hours,
-      minutes,
-      seconds,
-      milliseconds,
+      hours: Math.floor(diffMs / (1000 * 60 * 60)),
+      minutes: Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60)),
+      seconds: Math.floor((diffMs % (1000 * 60)) / 1000),
+      milliseconds: diffMs % 1000,
     };
   }
 
-  getRelativeDiff(date1, date2, { absolute = false } = {}) {
-    const [start, end] = absolute
-      ? [new Chronos(date1), new Chronos(date2)].sort()
-      : [new Chronos(date1), new Chronos(date2)];
-
-    return {
-      years: end.getFullYear() - start.getFullYear(),
-      months: end.getMonth() - start.getMonth(),
-      dates: end.getDate() - start.getDate(),
-      hours: end.getHours() - start.getHours(),
-      minutes: end.getMinutes() - start.getMinutes(),
-      seconds: end.getSeconds() - start.getSeconds(),
-      milliseconds: end.getMilliseconds() - start.getMilliseconds(),
-    };
+  static getDiffInUnits(date1, date2, unit, absolute = false) {
+    const [start, end] = Chronos.createSortedDates(date1, date2, absolute);
+    const unitMs = {
+      milliseconds: 1,
+      seconds: 1000,
+      minutes: 60000,
+      hours: 3600000,
+      days: 86400000,
+      weeks: 604800000,
+    }[unit];
+    return Math.abs(Math.floor((end - start) / unitMs));
   }
 
-  static getDiffInMilliseconds(date1, date2, { absolute = false } = {}) {
-    const [start, end] = absolute
-      ? [new Chronos(date1), new Chronos(date2)].sort()
-      : [new Chronos(date1), new Chronos(date2)];
-    return Math.abs(Math.floor(end - start));
+  static getDiffInMilliseconds(date1, date2, options = {}) {
+    return Chronos.getDiffInUnits(
+      date1,
+      date2,
+      "milliseconds",
+      options.absolute
+    );
+  }
+  static getDiffInSeconds(date1, date2, options = {}) {
+    return Chronos.getDiffInUnits(date1, date2, "seconds", options.absolute);
+  }
+  static getDiffInMinutes(date1, date2, options = {}) {
+    return Chronos.getDiffInUnits(date1, date2, "minutes", options.absolute);
+  }
+  static getDiffInHours(date1, date2, options = {}) {
+    return Chronos.getDiffInUnits(date1, date2, "hours", options.absolute);
+  }
+  static getDiffInDays(date1, date2, options = {}) {
+    return Chronos.getDiffInUnits(date1, date2, "days", options.absolute);
+  }
+  static getDiffInWeeks(date1, date2, options = {}) {
+    return Chronos.getDiffInUnits(date1, date2, "weeks", options.absolute);
   }
 
-  static getDiffInSeconds(date1, date2, { absolute = false } = {}) {
-    const [start, end] = absolute
-      ? [new Chronos(date1), new Chronos(date2)].sort()
-      : [new Chronos(date1), new Chronos(date2)];
-    return Math.abs(Math.floor((end - start) / 1000));
+  static getDiffInMonths(date1, date2, options = {}) {
+    const { years, months } = Chronos.getDiff(date1, date2, options);
+    return years * 12 + (months || 0);
   }
 
-  static getDiffInMinutes(date1, date2, { absolute = false } = {}) {
-    const [start, end] = absolute
-      ? [new Chronos(date1), new Chronos(date2)].sort()
-      : [new Chronos(date1), new Chronos(date2)];
-    const oneMinuteMs = 1000 * 60;
-    return Math.abs(Math.floor((end - start) / oneMinuteMs));
-  }
-
-  static getDiffInHours(date1, date2, { absolute = false } = {}) {
-    const [start, end] = absolute
-      ? [new Chronos(date1), new Chronos(date2)].sort()
-      : [new Chronos(date1), new Chronos(date2)];
-    const oneHourMs = 1000 * 60 * 60;
-    return Math.abs(Math.floor((end - start) / oneHourMs));
-  }
-
-  static getDiffInDays(date1, date2, { absolute = false } = {}) {
-    const [start, end] = absolute
-      ? [new Chronos(date1), new Chronos(date2)].sort()
-      : [new Chronos(date1), new Chronos(date2)];
-    const oneDayMs = 1000 * 60 * 60 * 24;
-    return Math.abs(Math.floor((end - start) / oneDayMs));
-  }
-
-  static getDiffInWeeks(date1, date2, { absolute = false } = {}) {
-    const [start, end] = absolute
-      ? [new Chronos(date1), new Chronos(date2)].sort()
-      : [new Chronos(date1), new Chronos(date2)];
-    const oneWeekMs = 1000 * 60 * 60 * 24 * 7;
-    return Math.abs(Math.floor((end - start) / oneWeekMs));
-  }
-
-  static getDiffInMonths(date1, date2, { absolute = false } = {}) {
-    const [start, end] = absolute
-      ? [new Chronos(date1), new Chronos(date2)].sort()
-      : [new Chronos(date1), new Chronos(date2)];
-    const { years, months } = this.getDiff(start, end);
-    return years * 12 + months;
-  }
-
-  static getDiffInYears(date1, date2, { absolute = false } = {}) {
-    const [start, end] = absolute
-      ? [new Chronos(date1), new Chronos(date2)].sort()
-      : [new Chronos(date1), new Chronos(date2)];
-    const { years } = this.getDiff(start, end);
-    return years;
+  static getDiffInYears(date1, date2, options = {}) {
+    return Chronos.getDiff(date1, date2, options).years;
   }
 
   clone() {
     return new Chronos(this);
   }
 
-  addYears(years) {
-    this.setFullYear(this.getFullYear() + Number(years));
-    return this;
-  }
-
-  addMonths(months) {
-    this.setMonth(this.getMonth() + Number(months));
-    return this;
-  }
-
-  addDays(days) {
-    this.setDate(this.getDate() + Number(days));
-    return this;
-  }
-
-  addHours(hours) {
-    this.setHours(this.getHours() + Number(hours));
-    return this;
-  }
-
-  addMinutes(minutes) {
-    this.setMinutes(this.getMinutes() + Number(minutes));
-    return this;
-  }
-
-  addSeconds(seconds) {
-    this.setSeconds(this.getSeconds() + Number(seconds));
-    return this;
-  }
-
-  addMilliseconds(milliseconds) {
-    this.setMilliseconds(this.getMilliseconds() + Number(milliseconds));
-    return this;
-  }
-
-  addDate({ years = 0, months = 0, weeks = 0, days = 0 }) {
-    this.setFullYear(this.getFullYear() + Number(years));
-    this.setMonth(this.getMonth() + Number(months));
-    this.setDate(this.getDate() + Number(weeks) * 7 + Number(days));
-    return this;
-  }
-
-  addTime({ hours = 0, minutes = 0, seconds = 0, milliseconds = 0 }) {
-    this.setHours(this.getHours() + Number(hours));
-    this.setMinutes(this.getMinutes() + Number(minutes));
-    this.setSeconds(this.getSeconds() + Number(seconds));
-    this.setMilliseconds(this.getMilliseconds() + Number(milliseconds));
-    return this;
-  }
-
-  addDateTime({
+  add({
     years = 0,
     months = 0,
     weeks = 0,
@@ -209,20 +116,26 @@ export default class Chronos extends Date {
     seconds = 0,
     milliseconds = 0,
   }) {
-    this.addDate({ years, months, weeks, days });
-    this.addTime({ hours, minutes, seconds, milliseconds });
+    this.setFullYear(this.getFullYear() + years);
+    this.setMonth(this.getMonth() + months);
+    this.setDate(this.getDate() + weeks * 7 + days);
+    this.setHours(this.getHours() + hours);
+    this.setMinutes(this.getMinutes() + minutes);
+    this.setSeconds(this.getSeconds() + seconds);
+    this.setMilliseconds(this.getMilliseconds() + milliseconds);
     return this;
   }
 
   setTimeZoneOffset(newOffset) {
-    const currentOffset = -this.getTimezoneOffset() / 60;
-    const diff = newOffset - currentOffset;
-    return new Chronos(this.getTime() + diff * 60 * 60 * 1000);
+    return new Chronos(
+      this.getTime() + (newOffset + this.getTimezoneOffset() / 60) * 3600000
+    );
   }
 
   convertToTimeZone(newOffset) {
-    const utcTime = this.getTime() - this.getTimezoneOffset() * 60 * 1000;
-    return new Chronos(utcTime + newOffset * 60 * 60 * 1000);
+    return new Chronos(
+      this.getTime() - this.getTimezoneOffset() * 60000 + newOffset * 3600000
+    );
   }
 
   getWeekday() {
@@ -230,28 +143,18 @@ export default class Chronos extends Date {
   }
 
   getDayOfYear() {
-    const startOfYear = new Chronos(this.getFullYear(), 0, 0);
-    return Math.floor((this - startOfYear) / (1000 * 60 * 60 * 24));
+    return Math.floor(
+      (this - new Chronos(this.getFullYear(), 0, 0)) / 86400000
+    );
   }
 
   getWeekNumber() {
-    const yearStart = new Chronos(this.getFullYear(), 0, 1);
     const firstThursday = new Chronos(
       this.getFullYear(),
       0,
-      1 + ((4 - yearStart.getDay() + 7) % 7)
+      1 + ((4 - new Chronos(this.getFullYear(), 0, 1).getDay() + 7) % 7)
     );
-    const daysDiff = Math.floor((this - firstThursday) / (1000 * 60 * 60 * 24));
-    return Math.floor(daysDiff / 7) + 1;
-  }
-
-  getFullWeeksSinceYearStart() {
-    const startOfYear = new Chronos(this.getFullYear(), 0, 1);
-    const dayOffset = (startOfYear.getDay() + 6) % 7;
-    const daysSinceYearStart = Math.floor(
-      (this - startOfYear) / (1000 * 60 * 60 * 24)
-    );
-    return Math.floor((daysSinceYearStart - dayOffset) / 7);
+    return Math.floor((this - firstThursday) / 604800000) + 1;
   }
 
   isLeapYear() {
@@ -263,20 +166,8 @@ export default class Chronos extends Date {
     return this.getTimezoneOffset() === 0;
   }
 
-  isLocal() {
-    return this.getTimezoneOffset() !== 0;
-  }
-
   toUTC() {
-    const utc = new Chronos(this.getTime());
-    utc.setMinutes(utc.getMinutes() + utc.getTimezoneOffset());
-    return utc;
-  }
-
-  toLocal() {
-    const local = new Chronos(this.getTime());
-    local.setMinutes(local.getMinutes() - local.getTimezoneOffset());
-    return local;
+    return new Chronos(this.getTime() + this.getTimezoneOffset() * 60000);
   }
 
   toDate() {
