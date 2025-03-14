@@ -6,13 +6,6 @@
  */
 export default class Chronos extends Date {
   /**
-   * @param {string | number | Date} date - The date value to initialize Chronos.
-   */
-  constructor(date) {
-    super(date);
-  }
-
-  /**
    * Creates a sorted array of Chronos instances based on the given dates.
    *
    * @param {string | number | Date} date1 - First date.
@@ -292,6 +285,13 @@ export default class Chronos extends Date {
    */
   static getDiffInYears(date1, date2, options = {}) {
     return Chronos.getDiff(date1, date2, options).years;
+  }
+
+  /**
+   * @param {string | number | Date} date - The date value to initialize Chronos.
+   */
+  constructor(date) {
+    super(date);
   }
 
   /**
