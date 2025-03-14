@@ -6,7 +6,9 @@ export default class Chronos extends Date {
   static getDiff(date1, date2, options = {}) {
     const { withWeeks = false, withMonths = true, absolute = false } = options;
 
-    const [start, end] = absolute ? [date1, date2].sort() : [date1, date2];
+    const [start, end] = absolute
+      ? [new Chronos(date1), new Chronos(date2)].sort()
+      : [new Chronos(date1), new Chronos(date2)];
 
     let years = end.getFullYear() - start.getFullYear();
     let monthsCount = 0;
@@ -66,7 +68,9 @@ export default class Chronos extends Date {
   }
 
   getRelativeDiff(date1, date2, { absolute = false } = {}) {
-    const [start, end] = absolute ? [date1, date2].sort() : [date1, date2];
+    const [start, end] = absolute
+      ? [new Chronos(date1), new Chronos(date2)].sort()
+      : [new Chronos(date1), new Chronos(date2)];
 
     return {
       years: end.getFullYear() - start.getFullYear(),
@@ -80,47 +84,63 @@ export default class Chronos extends Date {
   }
 
   static getDiffInMilliseconds(date1, date2, { absolute = false } = {}) {
-    const [start, end] = absolute ? [date1, date2].sort() : [date1, date2];
+    const [start, end] = absolute
+      ? [new Chronos(date1), new Chronos(date2)].sort()
+      : [new Chronos(date1), new Chronos(date2)];
     return Math.abs(Math.floor(end - start));
   }
 
   static getDiffInSeconds(date1, date2, { absolute = false } = {}) {
-    const [start, end] = absolute ? [date1, date2].sort() : [date1, date2];
+    const [start, end] = absolute
+      ? [new Chronos(date1), new Chronos(date2)].sort()
+      : [new Chronos(date1), new Chronos(date2)];
     return Math.abs(Math.floor((end - start) / 1000));
   }
 
   static getDiffInMinutes(date1, date2, { absolute = false } = {}) {
-    const [start, end] = absolute ? [date1, date2].sort() : [date1, date2];
+    const [start, end] = absolute
+      ? [new Chronos(date1), new Chronos(date2)].sort()
+      : [new Chronos(date1), new Chronos(date2)];
     const oneMinuteMs = 1000 * 60;
     return Math.abs(Math.floor((end - start) / oneMinuteMs));
   }
 
   static getDiffInHours(date1, date2, { absolute = false } = {}) {
-    const [start, end] = absolute ? [date1, date2].sort() : [date1, date2];
+    const [start, end] = absolute
+      ? [new Chronos(date1), new Chronos(date2)].sort()
+      : [new Chronos(date1), new Chronos(date2)];
     const oneHourMs = 1000 * 60 * 60;
     return Math.abs(Math.floor((end - start) / oneHourMs));
   }
 
   static getDiffInDays(date1, date2, { absolute = false } = {}) {
-    const [start, end] = absolute ? [date1, date2].sort() : [date1, date2];
+    const [start, end] = absolute
+      ? [new Chronos(date1), new Chronos(date2)].sort()
+      : [new Chronos(date1), new Chronos(date2)];
     const oneDayMs = 1000 * 60 * 60 * 24;
     return Math.abs(Math.floor((end - start) / oneDayMs));
   }
 
   static getDiffInWeeks(date1, date2, { absolute = false } = {}) {
-    const [start, end] = absolute ? [date1, date2].sort() : [date1, date2];
+    const [start, end] = absolute
+      ? [new Chronos(date1), new Chronos(date2)].sort()
+      : [new Chronos(date1), new Chronos(date2)];
     const oneWeekMs = 1000 * 60 * 60 * 24 * 7;
     return Math.abs(Math.floor((end - start) / oneWeekMs));
   }
 
   static getDiffInMonths(date1, date2, { absolute = false } = {}) {
-    const [start, end] = absolute ? [date1, date2].sort() : [date1, date2];
+    const [start, end] = absolute
+      ? [new Chronos(date1), new Chronos(date2)].sort()
+      : [new Chronos(date1), new Chronos(date2)];
     const { years, months } = this.getDiff(start, end);
     return years * 12 + months;
   }
 
   static getDiffInYears(date1, date2, { absolute = false } = {}) {
-    const [start, end] = absolute ? [date1, date2].sort() : [date1, date2];
+    const [start, end] = absolute
+      ? [new Chronos(date1), new Chronos(date2)].sort()
+      : [new Chronos(date1), new Chronos(date2)];
     const { years } = this.getDiff(start, end);
     return years;
   }
@@ -130,52 +150,52 @@ export default class Chronos extends Date {
   }
 
   addYears(years) {
-    this.setFullYear(this.getFullYear() + years);
+    this.setFullYear(this.getFullYear() + Number(years));
     return this;
   }
 
   addMonths(months) {
-    this.setMonth(this.getMonth() + months);
+    this.setMonth(this.getMonth() + Number(months));
     return this;
   }
 
   addDays(days) {
-    this.setDate(this.getDate() + days);
+    this.setDate(this.getDate() + Number(days));
     return this;
   }
 
   addHours(hours) {
-    this.setHours(this.getHours() + hours);
+    this.setHours(this.getHours() + Number(hours));
     return this;
   }
 
   addMinutes(minutes) {
-    this.setMinutes(this.getMinutes() + minutes);
+    this.setMinutes(this.getMinutes() + Number(minutes));
     return this;
   }
 
   addSeconds(seconds) {
-    this.setSeconds(this.getSeconds() + seconds);
+    this.setSeconds(this.getSeconds() + Number(seconds));
     return this;
   }
 
   addMilliseconds(milliseconds) {
-    this.setMilliseconds(this.getMilliseconds() + milliseconds);
+    this.setMilliseconds(this.getMilliseconds() + Number(milliseconds));
     return this;
   }
 
   addDate({ years = 0, months = 0, weeks = 0, days = 0 }) {
-    this.setFullYear(this.getFullYear() + years);
-    this.setMonth(this.getMonth() + months);
-    this.setDate(this.getDate() + weeks * 7 + days);
+    this.setFullYear(this.getFullYear() + Number(years));
+    this.setMonth(this.getMonth() + Number(months));
+    this.setDate(this.getDate() + Number(weeks) * 7 + Number(days));
     return this;
   }
 
   addTime({ hours = 0, minutes = 0, seconds = 0, milliseconds = 0 }) {
-    this.setHours(this.getHours() + hours);
-    this.setMinutes(this.getMinutes() + minutes);
-    this.setSeconds(this.getSeconds() + seconds);
-    this.setMilliseconds(this.getMilliseconds() + milliseconds);
+    this.setHours(this.getHours() + Number(hours));
+    this.setMinutes(this.getMinutes() + Number(minutes));
+    this.setSeconds(this.getSeconds() + Number(seconds));
+    this.setMilliseconds(this.getMilliseconds() + Number(milliseconds));
     return this;
   }
 
