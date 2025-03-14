@@ -13,7 +13,7 @@ export default class Chronos extends Date {
     let weeksCount = 0;
     let daysCount = 0;
 
-    let tempDate = new Date(start);
+    let tempDate = new Chronos(start);
 
     tempDate.setFullYear(start.getFullYear() + years);
     if (tempDate > end) {
@@ -194,18 +194,29 @@ export default class Chronos extends Date {
     return this;
   }
 
+  setTimeZoneOffset(newOffset) {
+    const currentOffset = -this.getTimezoneOffset() / 60;
+    const diff = newOffset - currentOffset;
+    return new Chronos(this.getTime() + diff * 60 * 60 * 1000);
+  }
+
+  convertToTimeZone(newOffset) {
+    const utcTime = this.getTime() - this.getTimezoneOffset() * 60 * 1000;
+    return new Chronos(utcTime + newOffset * 60 * 60 * 1000);
+  }
+
   getWeekday() {
     return ((this.getDay() + 6) % 7) + 1;
   }
 
   getDayOfYear() {
-    const startOfYear = new Date(this.getFullYear(), 0, 0);
+    const startOfYear = new Chronos(this.getFullYear(), 0, 0);
     return Math.floor((this - startOfYear) / (1000 * 60 * 60 * 24));
   }
 
   getWeekNumber() {
-    const yearStart = new Date(this.getFullYear(), 0, 1);
-    const firstThursday = new Date(
+    const yearStart = new Chronos(this.getFullYear(), 0, 1);
+    const firstThursday = new Chronos(
       this.getFullYear(),
       0,
       1 + ((4 - yearStart.getDay() + 7) % 7)
@@ -215,7 +226,7 @@ export default class Chronos extends Date {
   }
 
   getFullWeeksSinceYearStart() {
-    const startOfYear = new Date(this.getFullYear(), 0, 1);
+    const startOfYear = new Chronos(this.getFullYear(), 0, 1);
     const dayOffset = (startOfYear.getDay() + 6) % 7;
     const daysSinceYearStart = Math.floor(
       (this - startOfYear) / (1000 * 60 * 60 * 24)
@@ -237,14 +248,18 @@ export default class Chronos extends Date {
   }
 
   toUTC() {
-    const utc = new Date(this.getTime());
+    const utc = new Chronos(this.getTime());
     utc.setMinutes(utc.getMinutes() + utc.getTimezoneOffset());
     return utc;
   }
 
   toLocal() {
-    const local = new Date(this.getTime());
+    const local = new Chronos(this.getTime());
     local.setMinutes(local.getMinutes() - local.getTimezoneOffset());
     return local;
+  }
+
+  toDate() {
+    return new Date(this);
   }
 }
