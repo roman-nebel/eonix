@@ -4,15 +4,15 @@
  *
  * @version 1.0.0
  */
-export default class Chronos extends Date {
+class Chronos extends Date {
   /**
    * Creates a sorted array of Chronos instances based on the given dates.
    *
    * @param {string | number | Date} date1 - First date.
    * @param {string | number | Date} date2 - Second date.
-   * @param {boolean} absolute - Whether to create absolute Chronos instances.
+   * @param {...(string | number | Date)} dates - Additional dates to include in the sorting.
    *
-   * @returns {[Chronos, Chronos]} An array of sorted Chronos instances.
+   * @returns {Chronos[]} An array of Chronos instances sorted in ascending order.
    *
    * @example
    * const [date1, date2] = Chronos.createSortedDates('2023-01-01', '2023-06-30', false);
@@ -21,10 +21,12 @@ export default class Chronos extends Date {
    *
    * @since 1.0.0
    */
-  static createSortedDates(date1, date2, absolute = true) {
-    return absolute
-      ? [new Chronos(date1), new Chronos(date2)].sort()
-      : [new Chronos(date1), new Chronos(date2)];
+  static createSortedDates(date1, date2, ...dates) {
+    return [
+      new Chronos(date1),
+      new Chronos(date2),
+      ...dates.map((date) => new Chronos(date)),
+    ].sort((a, b) => a - b);
   }
 
   /**
@@ -35,7 +37,6 @@ export default class Chronos extends Date {
    * @param {Object} [options] - Calculation options.
    * @param {boolean} [options.withWeeks=false] - Include weeks in calculation.
    * @param {boolean} [options.withMonths=true] - Include months in calculation.
-   * @param {boolean} [options.absolute=false] - Return absolute values.
    *
    * @returns {{ years: number, months?: number, weeks?: number, days: number, hours: number, minutes: number, seconds: number, milliseconds: number }}
    *
@@ -46,48 +47,72 @@ export default class Chronos extends Date {
    * @since 1.0.0
    */
   static getDiff(date1, date2, options = {}) {
-    const { withWeeks = false, withMonths = true, absolute = false } = options;
-    const [start, end] = Chronos.createSortedDates(date1, date2, absolute);
+    const { withWeeks = false, withMonths = true } = options;
+    const [start, end] = Chronos.createSortedDates(date1, date2);
 
     let years = end.getFullYear() - start.getFullYear();
-    let monthsCount = 0,
-      weeksCount = 0,
-      daysCount = 0;
     let tempDate = new Chronos(start);
 
+    // Special case: Leap year issue (Feb 29 -> Feb 28)
+    const leapYearCorrection =
+      start.getMonth() === 1 &&
+      start.getDate() === 29 &&
+      years > 0 &&
+      !end.isLeapYear();
+
     tempDate.setFullYear(tempDate.getFullYear() + years);
+
     if (tempDate > end) {
       years--;
       tempDate.setFullYear(tempDate.getFullYear() - 1);
     }
 
+    let months = 0;
     if (withMonths) {
-      while (tempDate <= end) {
-        tempDate.setMonth(tempDate.getMonth() + 1);
-        if (tempDate > end) break;
-        monthsCount++;
+      let startYear = tempDate.getFullYear();
+      let endYear = end.getFullYear();
+      let startMonth = tempDate.getMonth();
+      let endMonth = end.getMonth();
+
+      months = (endYear - startYear) * 12 + (endMonth - startMonth);
+
+      tempDate.setMonth(tempDate.getMonth() + months);
+
+      if (tempDate > end) {
+        months--;
+        tempDate.setMonth(tempDate.getMonth() - 1);
       }
     }
 
+    let daysCount = Math.floor((end - tempDate) / (1000 * 60 * 60 * 24));
+    let weeksCount = 0;
     if (withWeeks) {
-      daysCount = Math.floor((end - tempDate) / (1000 * 60 * 60 * 24));
       weeksCount = Math.floor(daysCount / 7);
       daysCount %= 7;
-      tempDate.setDate(tempDate.getDate() + weeksCount * 7 + daysCount);
-    } else if (!withMonths) {
-      daysCount = Math.floor((end - tempDate) / (1000 * 60 * 60 * 24));
-      tempDate.setDate(tempDate.getDate() + daysCount);
     }
+    tempDate = new Chronos(
+      Date.UTC(
+        tempDate.getFullYear(),
+        tempDate.getMonth(),
+        tempDate.getDate() + weeksCount * 7 + daysCount
+      )
+    );
 
-    const diffMs = end - tempDate;
+    const startOffset = tempDate.getTimezoneOffset();
+    const endOffset = end.getTimezoneOffset();
+    const dstShift = startOffset - endOffset;
+
+    const diffMs = Math.abs(end - tempDate);
     return {
       years,
-      months: withMonths ? monthsCount : undefined,
+      months: withMonths ? months : undefined,
       weeks: withWeeks ? weeksCount : undefined,
-      days: daysCount,
-      hours: Math.floor(diffMs / (1000 * 60 * 60)),
-      minutes: Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60)),
-      seconds: Math.floor((diffMs % (1000 * 60)) / 1000),
+      days: daysCount + (leapYearCorrection ? 1 : 0),
+      hours:
+        (Math.floor(diffMs / (1000 * 60 * 60)) % 24) +
+        (dstShift === 60 ? 1 : 0),
+      minutes: Math.floor((diffMs / (1000 * 60)) % 60),
+      seconds: Math.floor((diffMs / 1000) % 60),
       milliseconds: diffMs % 1000,
     };
   }
@@ -98,7 +123,6 @@ export default class Chronos extends Date {
    * @param {string | number | Date} date1 - First date.
    * @param {string | number | Date} date2 - Second date.
    * @param {"milliseconds" | "seconds" | "minutes" | "hours" | "days" | "weeks"} unit - Unit of difference (milliseconds, seconds, minutes, hours, days, weeks).
-   * @param {boolean} [absolute=false] - Return absolute values.
    *
    * @returns {number}
    *
@@ -108,8 +132,8 @@ export default class Chronos extends Date {
    *
    * @since 1.0.0
    */
-  static getDiffInUnits(date1, date2, unit, absolute = false) {
-    const [start, end] = Chronos.createSortedDates(date1, date2, absolute);
+  static getDiffInUnits(date1, date2, unit) {
+    const [start, end] = Chronos.createSortedDates(date1, date2);
     const unitMs = {
       milliseconds: 1,
       seconds: 1000,
@@ -127,7 +151,6 @@ export default class Chronos extends Date {
    * @param {string | number | Date} date1 - First date.
    * @param {string | number | Date} date2 - Second date.
    * @param {Object} [options] - Calculation options.
-   * @param {boolean} [options.absolute=false] - Return absolute values.
    *
    * @returns {Chronos} A new Chronos instance with the same date.
    *
@@ -700,3 +723,5 @@ export default class Chronos extends Date {
     return new Date(this);
   }
 }
+
+module.exports = Chronos;
