@@ -603,6 +603,38 @@ describe("Chronos", () => {
     });
   });
 
+  describe("getDiffInMinutes", () => {
+    test("should return 0 for the same minute", () => {
+      expect(
+        Chronos.getDiffInMinutes("2024-03-14T12:30:00", "2024-03-14T12:30:00")
+      ).toBe(0);
+    });
+
+    test("should count full minutes correctly", () => {
+      expect(
+        Chronos.getDiffInMinutes("2024-03-14T12:00:00", "2024-03-14T12:10:00")
+      ).toBe(10);
+    });
+
+    test("should handle hour transitions", () => {
+      expect(
+        Chronos.getDiffInMinutes("2024-03-14T12:59:00", "2024-03-14T13:01:00")
+      ).toBe(2);
+    });
+
+    test("should handle day transitions", () => {
+      expect(
+        Chronos.getDiffInMinutes("2024-03-14T23:59:00", "2024-03-15T00:01:00")
+      ).toBe(2);
+    });
+
+    test("should handle DST changes", () => {
+      expect(
+        Chronos.getDiffInMinutes("2024-03-24T01:59:00", "2024-03-24T03:01:00")
+      ).toBe(62);
+    });
+  });
+
   describe("getDiffInUnits", () => {
     test("should calculate difference in days", () => {
       expect(Chronos.getDiffInUnits("2023-01-01", "2023-06-30", "days")).toBe(
