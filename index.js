@@ -133,8 +133,12 @@ class Chronos extends Date {
    * @since 1.0.0
    */
   static getDiffInUnits(start, end, unit) {
-    start = new Chronos(start);
-    end = new Chronos(end);
+    if (!(start instanceof Date)) {
+      start = new Date(start);
+    }
+    if (!(end instanceof Date)) {
+      end = new Date(end);
+    }
     const unitMs = {
       milliseconds: 1,
       seconds: 1000,
@@ -173,12 +177,10 @@ class Chronos extends Date {
   /**
    * Calculates the difference between two dates in seconds.
    *
-   * @param {string | number | Date} date1 - First date.
-   * @param {string | number | Date} date2 - Second date.
-   * @param {Object} [options] - Calculation options.
-   * @param {boolean} [options.absolute=false] - Return absolute values.
+   * @param {string | number | Date} start - First date.
+   * @param {string | number | Date} end - Second date.
    *
-   * @returns {Chronos} A new Chronos instance with the same date.
+   * @returns {number} A number of full seconds between the two dates.
    *
    * @example
    * const diff = Chronos.getDiffInSeconds('2023-01-01', '2023-06-30');
@@ -186,8 +188,8 @@ class Chronos extends Date {
    *
    * @since 1.0.0
    */
-  static getDiffInSeconds(date1, date2, options = {}) {
-    return Chronos.getDiffInUnits(date1, date2, "seconds", options.absolute);
+  static getDiffInSeconds(start, end) {
+    return Chronos.getDiffInUnits(start, end, "seconds");
   }
 
   /**
@@ -277,8 +279,12 @@ class Chronos extends Date {
    * @since 1.0.0
    */
   static getDiffInMonths(start, end) {
-    start = new Chronos(start);
-    end = new Chronos(end);
+    if (!(start instanceof Date)) {
+      start = new Date(start);
+    }
+    if (!(end instanceof Date)) {
+      end = new Date(end);
+    }
     let years = this.getDiffInYears(start, end);
     let months = end.getMonth() - start.getMonth();
 
@@ -316,8 +322,12 @@ class Chronos extends Date {
    * @since 1.0.0
    */
   static getDiffInYears(start, end) {
-    start = new Chronos(start);
-    end = new Chronos(end);
+    if (!(start instanceof Date)) {
+      start = new Date(start);
+    }
+    if (!(end instanceof Date)) {
+      end = new Date(end);
+    }
     let years = end.getFullYear() - start.getFullYear();
 
     const startAdjusted = new Chronos(

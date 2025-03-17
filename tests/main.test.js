@@ -635,17 +635,29 @@ describe("Chronos", () => {
     });
   });
 
-  describe("getDiffInUnits", () => {
-    test("should calculate difference in days", () => {
-      expect(Chronos.getDiffInUnits("2023-01-01", "2023-06-30", "days")).toBe(
-        180
-      );
+  describe("getDiffInSeconds", () => {
+    test("should return 0 for the same second", () => {
+      expect(
+        Chronos.getDiffInSeconds("2024-03-14T12:30:30", "2024-03-14T12:30:30")
+      ).toBe(0);
     });
 
-    test("should calculate difference in weeks", () => {
-      expect(Chronos.getDiffInUnits("2023-01-01", "2023-06-30", "weeks")).toBe(
-        25
-      );
+    test("should count full seconds correctly", () => {
+      expect(
+        Chronos.getDiffInSeconds("2024-03-14T12:00:00", "2024-03-14T12:00:10")
+      ).toBe(10);
+    });
+
+    test("should handle minute transitions", () => {
+      expect(
+        Chronos.getDiffInSeconds("2024-03-14T12:59:59", "2024-03-14T13:00:01")
+      ).toBe(2);
+    });
+
+    test("should handle hour transitions", () => {
+      expect(
+        Chronos.getDiffInSeconds("2024-03-14T23:59:59", "2024-03-15T00:00:01")
+      ).toBe(2);
     });
   });
 
