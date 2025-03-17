@@ -541,6 +541,68 @@ describe("Chronos", () => {
     });
   });
 
+  describe("getDiffInHours", () => {
+    test("should return 0 for the same time", () => {
+      expect(
+        Chronos.getDiffInHours("2024-03-14T12:00:00", "2024-03-14T12:00:00")
+      ).toBe(0);
+    });
+
+    test("should count full hours correctly", () => {
+      expect(
+        Chronos.getDiffInHours("2024-03-14T00:00:00", "2024-03-14T10:00:00")
+      ).toBe(10);
+    });
+
+    test("should handle hour differences across days", () => {
+      expect(
+        Chronos.getDiffInHours("2024-03-14T23:00:00", "2024-03-15T01:00:00")
+      ).toBe(2);
+    });
+
+    test("should handle leap years", () => {
+      expect(
+        Chronos.getDiffInHours("2020-02-28T23:00:00", "2020-02-29T01:00:00")
+      ).toBe(2);
+    });
+
+    test("should handle non-leap years", () => {
+      expect(
+        Chronos.getDiffInHours("2021-02-28T23:00:00", "2021-03-01T01:00:00")
+      ).toBe(2);
+    });
+
+    test("should handle DST changes", () => {
+      expect(
+        Chronos.getDiffInHours("2024-03-24T01:00:00", "2024-03-24T03:00:00")
+      ).toBe(2);
+    });
+
+    test("should handle large differences", () => {
+      expect(
+        Chronos.getDiffInHours("2000-01-01T00:00:00", "2000-01-02T00:00:00")
+      ).toBe(24);
+    });
+
+    test("should return 0 if end time is before start time", () => {
+      expect(
+        Chronos.getDiffInHours("2024-03-14T15:00:00", "2024-03-14T10:00:00")
+      ).toBe(-5);
+    });
+
+    test("should handle century transitions", () => {
+      expect(
+        Chronos.getDiffInHours("1899-12-31T23:00:00", "2000-01-01T01:00:00")
+      ).toBe(876578);
+    });
+
+    test("should handle minutes and seconds correctly", () => {
+      expect(
+        Chronos.getDiffInHours("2024-03-14T12:00:59", "2024-03-14T13:00:00")
+      ).toBe(0);
+    });
+  });
+
   describe("getDiffInUnits", () => {
     test("should calculate difference in days", () => {
       expect(Chronos.getDiffInUnits("2023-01-01", "2023-06-30", "days")).toBe(
