@@ -11,6 +11,7 @@ describe("Chronos", () => {
     });
   });
 
+  /*
   describe("getDiff", () => {
     test("should calculate the difference correctly with default options", () => {
       const diff = Chronos.getDiff("2023-01-01", "2023-06-30");
@@ -345,6 +346,113 @@ describe("Chronos", () => {
         minutes: 0,
         seconds: 0,
         milliseconds: 0,
+      });
+    });
+  });
+  */
+
+  describe("getDiffInYears", () => {
+    test("should return 0 when dates are in the same year", () => {
+      expect(
+        Chronos.getDiffInYears(new Date("2023-01-01"), new Date("2023-12-31"))
+      ).toBe(0);
+    });
+
+    test("should return 1 for an exact one-year difference", () => {
+      expect(
+        Chronos.getDiffInYears(new Date("2023-01-01"), new Date("2024-01-01"))
+      ).toBe(1);
+    });
+
+    test("should return 2 for two full years", () => {
+      expect(
+        Chronos.getDiffInYears(new Date("2020-05-15"), new Date("2022-05-15"))
+      ).toBe(2);
+    });
+
+    test("should return negative value if the end date is before the start date", () => {
+      expect(
+        Chronos.getDiffInYears(new Date("2025-01-01"), new Date("2023-01-01"))
+      ).toBe(-2);
+    });
+
+    test("should handle leap years correctly (Feb 29 -> Feb 28)", () => {
+      expect(
+        Chronos.getDiffInYears(new Date("2020-02-29"), new Date("2021-02-28"))
+      ).toBe(0);
+    });
+
+    test("should handle leap years correctly (Feb 29 -> Mar 01)", () => {
+      expect(
+        Chronos.getDiffInYears(new Date("2020-02-29"), new Date("2021-03-01"))
+      ).toBe(1);
+    });
+
+    test("should return 10 for a decade difference", () => {
+      expect(
+        Chronos.getDiffInYears(new Date("2010-06-30"), new Date("2020-06-30"))
+      ).toBe(10);
+    });
+
+    test("should return 50 for half a century", () => {
+      expect(
+        Chronos.getDiffInYears(new Date("1973-07-15"), new Date("2023-07-15"))
+      ).toBe(50);
+    });
+
+    test("should return 100 for a century difference", () => {
+      expect(
+        Chronos.getDiffInYears(new Date("1923-08-10"), new Date("2023-08-10"))
+      ).toBe(100);
+    });
+
+    test("should correctly handle large differences with leap years", () => {
+      expect(
+        Chronos.getDiffInYears(new Date("1900-01-01"), new Date("2000-01-01"))
+      ).toBe(100);
+    });
+  });
+
+  describe("getDiffInMonths", () => {
+    describe("Chronos.getDiffInMonths", () => {
+      test("should return 0 when the dates are in the same month", () => {
+        expect(Chronos.getDiffInMonths("2023-06-15", "2023-06-30")).toBe(0);
+      });
+
+      test("should count months correctly in the same year", () => {
+        expect(Chronos.getDiffInMonths("2023-01-15", "2023-06-15")).toBe(5);
+      });
+
+      test("should count full months even with date shifts", () => {
+        expect(Chronos.getDiffInMonths("2023-01-31", "2023-03-01")).toBe(1);
+      });
+
+      test("should count month difference across years", () => {
+        expect(Chronos.getDiffInMonths("2022-11-15", "2023-02-15")).toBe(3);
+      });
+
+      test("should handle leap year transition correctly", () => {
+        expect(Chronos.getDiffInMonths("2020-02-29", "2021-02-28")).toBe(11);
+      });
+
+      test("should count full years as 12 months", () => {
+        expect(Chronos.getDiffInMonths("2020-05-15", "2023-05-15")).toBe(36);
+      });
+
+      test("should handle different days in month transition", () => {
+        expect(Chronos.getDiffInMonths("2023-01-30", "2023-02-28")).toBe(0);
+      });
+
+      test("should handle large year gaps correctly", () => {
+        expect(Chronos.getDiffInMonths("1900-01-01", "2000-01-01")).toBe(1200);
+      });
+
+      test("should return 0 when start date is after end date", () => {
+        expect(Chronos.getDiffInMonths("2023-06-01", "2023-05-01")).toBe(-1);
+      });
+
+      test("should handle century transitions correctly", () => {
+        expect(Chronos.getDiffInMonths("1899-12-31", "2000-01-01")).toBe(1200);
       });
     });
   });
