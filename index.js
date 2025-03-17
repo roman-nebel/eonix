@@ -274,10 +274,8 @@ class Chronos extends Date {
    *
    * @param {string | number | Date} date1 - First date.
    * @param {string | number | Date} date2 - Second date.
-   * @param {Object} [options] - Calculation options.
-   * @param {boolean} [options.absolute=false] - Return absolute values.
    *
-   * @returns {Chronos} A new Chronos instance with the same date.
+   * @returns {number} A number of full months between the two dates.
    *
    * @example
    * const diff = Chronos.getDiffInMonths('2023-01-01', '2023-06-30');
@@ -285,9 +283,29 @@ class Chronos extends Date {
    *
    * @since 1.0.0
    */
-  static getDiffInMonths(date1, date2, options = {}) {
-    const { years, months } = Chronos.getDiff(date1, date2, options);
-    return years * 12 + (months || 0);
+  static getDiffInMonths(start, end) {
+    start = new Chronos(start);
+    end = new Chronos(end);
+    let years = this.getDiffInYears(start, end);
+    let months = end.getMonth() - start.getMonth();
+
+    if (
+      start.isLeapYear() &&
+      !end.isLeapYear() &&
+      end.getMonth() === 1 &&
+      end.getDate() === 28
+    ) {
+      months = 11;
+    } else if (start.getDate() > end.getDate()) {
+      months--;
+    }
+
+    if (months < 0) {
+      months += 12;
+      years--;
+    }
+
+    return months + years * 12;
   }
 
   /**
