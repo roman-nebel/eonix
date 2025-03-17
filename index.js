@@ -233,12 +233,10 @@ class Chronos extends Date {
   /**
    * Calculates the difference between two dates in days.
    *
-   * @param {string | number | Date} date1 - First date.
-   * @param {string | number | Date} date2 - Second date.
-   * @param {Object} [options] - Calculation options.
-   * @param {boolean} [options.absolute=false] - Return absolute values.
+   * @param {string | number | Date | Chronos} start - First date.
+   * @param {string | number | Date | Chronos} end - Second date.
    *
-   * @returns {Chronos} A new Chronos instance with the same date.
+   * @returns {number} A number of full days between the two dates.
    *
    * @example
    * const diff = Chronos.getDiffInDays('2023-01-01', '2023-06-30');
@@ -246,8 +244,8 @@ class Chronos extends Date {
    *
    * @since 1.0.0
    */
-  static getDiffInDays(date1, date2, options = {}) {
-    return Chronos.getDiffInUnits(date1, date2, "days", options.absolute);
+  static getDiffInDays(start, end) {
+    return Chronos.getDiffInUnits(start, end, "days");
   }
 
   /**

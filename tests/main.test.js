@@ -499,6 +499,48 @@ describe("Chronos", () => {
     });
   });
 
+  describe("getDiffInDays", () => {
+    test("should return 0 for the same date", () => {
+      expect(Chronos.getDiffInDays("2024-03-14", "2024-03-14")).toBe(0);
+    });
+
+    test("should count full days correctly", () => {
+      expect(Chronos.getDiffInDays("2024-03-01", "2024-03-05")).toBe(4);
+    });
+
+    test("should handle leap years", () => {
+      expect(Chronos.getDiffInDays("2020-02-28", "2020-03-01")).toBe(2);
+    });
+
+    test("should handle non-leap years", () => {
+      expect(Chronos.getDiffInDays("2021-02-28", "2021-03-01")).toBe(1);
+    });
+
+    test("should handle differences across months", () => {
+      expect(Chronos.getDiffInDays("2024-01-31", "2024-02-29")).toBe(29);
+    });
+
+    test("should handle differences across years", () => {
+      expect(Chronos.getDiffInDays("2023-12-31", "2024-01-01")).toBe(1);
+    });
+
+    test("should handle century transitions", () => {
+      expect(Chronos.getDiffInDays("1899-12-31", "2000-01-01")).toBe(36525);
+    });
+
+    test("should return 0 if end date is before start date", () => {
+      expect(Chronos.getDiffInDays("2024-03-15", "2024-03-01")).toBe(-14);
+    });
+
+    test("should handle very large differences", () => {
+      expect(Chronos.getDiffInDays("1900-01-01", "2000-01-01")).toBe(36524);
+    });
+
+    test("should handle DST changes", () => {
+      expect(Chronos.getDiffInDays("2024-03-24", "2024-03-25")).toBe(1);
+    });
+  });
+
   describe("getDiffInUnits", () => {
     test("should calculate difference in days", () => {
       expect(Chronos.getDiffInUnits("2023-01-01", "2023-06-30", "days")).toBe(
