@@ -662,6 +662,26 @@ describe("Chronos", () => {
   });
 
   describe("getDiffInMilliseconds", () => {
+    test("should return 0 for the same timestamp", () => {
+      expect(
+        Chronos.getDiffInMilliseconds(
+          "2024-03-14T12:30:30.500",
+          "2024-03-14T12:30:30.500"
+        )
+      ).toBe(0);
+    });
+
+    test("should count full milliseconds correctly", () => {
+      expect(
+        Chronos.getDiffInMilliseconds(
+          "2024-03-14T12:00:00.000",
+          "2024-03-14T12:00:00.100"
+        )
+      ).toBe(100);
+    });
+  });
+
+  describe("getDiffInMilliseconds", () => {
     test("should calculate the difference in milliseconds", () => {
       expect(Chronos.getDiffInMilliseconds("2023-01-01", "2023-01-02")).toBe(
         86400000

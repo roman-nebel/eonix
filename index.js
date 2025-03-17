@@ -133,11 +133,11 @@ class Chronos extends Date {
    * @since 1.0.0
    */
   static getDiffInUnits(start, end, unit) {
-    if (!(start instanceof Date)) {
-      start = new Date(start);
+    if (!(start instanceof Chronos)) {
+      start = new Chronos(start);
     }
-    if (!(end instanceof Date)) {
-      end = new Date(end);
+    if (!(end instanceof Chronos)) {
+      end = new Chronos(end);
     }
     const unitMs = {
       milliseconds: 1,
@@ -153,11 +153,10 @@ class Chronos extends Date {
   /**
    * Calculates the difference between two dates in milliseconds.
    *
-   * @param {string | number | Date} date1 - First date.
-   * @param {string | number | Date} date2 - Second date.
-   * @param {Object} [options] - Calculation options.
+   * @param {string | number | Date} start - First date.
+   * @param {string | number | Date} end - Second date.
    *
-   * @returns {Chronos} A new Chronos instance with the same date.
+   * @returns {number} A number of full milliseconds between the two dates.
    *
    * @example
    * const diff = Chronos.getDiffInMilliseconds('2023-01-01', '2023-06-30');
@@ -165,13 +164,8 @@ class Chronos extends Date {
    *
    * @since 1.0.0
    */
-  static getDiffInMilliseconds(date1, date2, options = {}) {
-    return Chronos.getDiffInUnits(
-      date1,
-      date2,
-      "milliseconds",
-      options.absolute
-    );
+  static getDiffInMilliseconds(start, end) {
+    return Chronos.getDiffInUnits(start, end, "milliseconds");
   }
 
   /**
@@ -279,11 +273,11 @@ class Chronos extends Date {
    * @since 1.0.0
    */
   static getDiffInMonths(start, end) {
-    if (!(start instanceof Date)) {
-      start = new Date(start);
+    if (!(start instanceof Chronos)) {
+      start = new Chronos(start);
     }
-    if (!(end instanceof Date)) {
-      end = new Date(end);
+    if (!(end instanceof Chronos)) {
+      end = new Chronos(end);
     }
     let years = this.getDiffInYears(start, end);
     let months = end.getMonth() - start.getMonth();
@@ -322,11 +316,11 @@ class Chronos extends Date {
    * @since 1.0.0
    */
   static getDiffInYears(start, end) {
-    if (!(start instanceof Date)) {
-      start = new Date(start);
+    if (!(start instanceof Chronos)) {
+      start = new Chronos(start);
     }
-    if (!(end instanceof Date)) {
-      end = new Date(end);
+    if (!(end instanceof Chronos)) {
+      end = new Chronos(end);
     }
     let years = end.getFullYear() - start.getFullYear();
 
