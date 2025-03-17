@@ -143,7 +143,7 @@ class Chronos extends Date {
       days: 86400000,
       weeks: 604800000,
     }[unit];
-    return Math.abs(Math.floor((end - start) / unitMs));
+    return Math.floor((end - start) / unitMs);
   }
 
   /**
