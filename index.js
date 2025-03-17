@@ -120,11 +120,11 @@ class Chronos extends Date {
   /**
    * Generic method. Calculates the difference between two dates in a specific unit.
    *
-   * @param {string | number | Date} date1 - First date.
-   * @param {string | number | Date} date2 - Second date.
+   * @param {string | number | Date | Chronos} start - First date.
+   * @param {string | number | Date | Chronos} end - Second date.
    * @param {"milliseconds" | "seconds" | "minutes" | "hours" | "days" | "weeks"} unit - Unit of difference (milliseconds, seconds, minutes, hours, days, weeks).
    *
-   * @returns {number}
+   * @returns {number} A number of units between the two dates.
    *
    * @example
    * const diff = Chronos.getDiffInUnits('2023-01-01', '2023-06-30', 'days');
@@ -132,8 +132,9 @@ class Chronos extends Date {
    *
    * @since 1.0.0
    */
-  static getDiffInUnits(date1, date2, unit) {
-    const [start, end] = Chronos.createSortedDates(date1, date2);
+  static getDiffInUnits(start, end, unit) {
+    start = new Chronos(start);
+    end = new Chronos(end);
     const unitMs = {
       milliseconds: 1,
       seconds: 1000,
@@ -252,12 +253,10 @@ class Chronos extends Date {
   /**
    * Calculates the difference between two dates in weeks.
    *
-   * @param {string | number | Date} date1 - First date.
-   * @param {string | number | Date} date2 - Second date.
-   * @param {Object} [options] - Calculation options.
-   * @param {boolean} [options.absolute=false] - Return absolute values.
+   * @param {string | number | Date | Chronos} start - First date.
+   * @param {string | number | Date | Chronos} end - Second date.
    *
-   * @returns {Chronos} A new Chronos instance with the same date.
+   * @returns {number} A number of full weeks between the two dates.
    *
    * @example
    * const diff = Chronos.getDiffInWeeks('2023-01-01', '2023-06-30');
@@ -265,15 +264,15 @@ class Chronos extends Date {
    *
    * @since 1.0.0
    */
-  static getDiffInWeeks(date1, date2, options = {}) {
-    return Chronos.getDiffInUnits(date1, date2, "weeks", options.absolute);
+  static getDiffInWeeks(start, end) {
+    return Chronos.getDiffInUnits(start, end, "weeks");
   }
 
   /**
    * Calculates the difference between two dates in months.
    *
-   * @param {string | number | Date} date1 - First date.
-   * @param {string | number | Date} date2 - Second date.
+   * @param {string | number | Date | Chronos} start - First date.
+   * @param {string | number | Date | Chronos} end - Second date.
    *
    * @returns {number} A number of full months between the two dates.
    *
