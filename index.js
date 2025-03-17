@@ -293,12 +293,10 @@ class Chronos extends Date {
   /**
    * Calculates the difference between two dates in years.
    *
-   * @param {string | number | Date} date1 - First date.
-   * @param {string | number | Date} date2 - Second date.
-   * @param {Object} [options] - Calculation options.
-   * @param {boolean} [options.absolute=false] - Return absolute values.
+   * @param {string | number | Date | Chronos} start - First date.
+   * @param {string | number | Date | Chronos} end - Second date.
    *
-   * @returns {Chronos} A Chronos instance.
+   * @returns {number} A number of full years between the two dates.
    *
    * @example
    * const diff = Chronos.getDiffInYears('2023-01-01', '2023-06-30');
@@ -306,8 +304,32 @@ class Chronos extends Date {
    *
    * @since 1.0.0
    */
-  static getDiffInYears(date1, date2, options = {}) {
-    return Chronos.getDiff(date1, date2, options).years;
+  static getDiffInYears(start, end) {
+    start = new Chronos(start);
+    end = new Chronos(end);
+    let years = end.getFullYear() - start.getFullYear();
+
+    const startAdjusted = new Chronos(
+      end.getFullYear(),
+      start.getMonth(),
+      start.getDate()
+    );
+
+    if (startAdjusted > end) {
+      years--;
+    }
+
+    if (
+      start.getMonth() === 1 &&
+      start.getDate() === 29 &&
+      end.getMonth() === 1 &&
+      end.getDate() === 28 &&
+      !end.isLeapYear()
+    ) {
+      years--;
+    }
+
+    return years;
   }
 
   /**
