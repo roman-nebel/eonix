@@ -235,4 +235,56 @@ describe("Chronos", () => {
       expect(date.getUTCHours()).toBe(10);
     });
   });
+
+  describe(".getWeekday", () => {
+    test("returns Monday (1) for a Monday date", () => {
+      const date = new Chronos("2025-03-24"); // Monday
+      expect(date.getWeekday()).toBe(1);
+    });
+
+    test("returns Tuesday (2) for a Tuesday date", () => {
+      const date = new Chronos("2025-03-25"); // Tuesday
+      expect(date.getWeekday()).toBe(2);
+    });
+
+    test("returns Wednesday (3) for a Wednesday date", () => {
+      const date = new Chronos("2025-03-26"); // Wednesday
+      expect(date.getWeekday()).toBe(3);
+    });
+
+    test("returns Thursday (4) for a Thursday date", () => {
+      const date = new Chronos("2025-03-27"); // Thursday
+      expect(date.getWeekday()).toBe(4);
+    });
+
+    test("returns Friday (5) for a Friday date", () => {
+      const date = new Chronos("2025-03-28"); // Friday
+      expect(date.getWeekday()).toBe(5);
+    });
+
+    test("returns Saturday (6) for a Saturday date", () => {
+      const date = new Chronos("2025-03-29"); // Saturday
+      expect(date.getWeekday()).toBe(6);
+    });
+
+    test("returns Sunday (7) for a Sunday date", () => {
+      const date = new Chronos("2025-03-30"); // Sunday
+      expect(date.getWeekday()).toBe(7);
+    });
+
+    test("handles leap year correctly (Feb 29, 2024 is Thursday)", () => {
+      const date = new Chronos("2024-02-29");
+      expect(date.getWeekday()).toBe(4); // Thursday
+    });
+
+    test("handles January 1st of a non-leap year (2025-01-01 is Wednesday)", () => {
+      const date = new Chronos("2025-01-01");
+      expect(date.getWeekday()).toBe(3); // Wednesday
+    });
+
+    test("handles January 1st of a leap year (2024-01-01 is Monday)", () => {
+      const date = new Chronos("2024-01-01");
+      expect(date.getWeekday()).toBe(1); // Monday
+    });
+  });
 });
