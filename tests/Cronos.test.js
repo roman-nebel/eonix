@@ -288,7 +288,7 @@ describe("Chronos", () => {
     });
   });
 
-  describe("Chronos getDayOfYear", () => {
+  describe(".getDayOfYear", () => {
     test("returns 1 for January 1st", () => {
       const date = new Chronos("2025-01-01");
       expect(date.getDayOfYear()).toBe(1);
@@ -337,6 +337,48 @@ describe("Chronos", () => {
     test("handles a date in the second half of the year (October 15th)", () => {
       const date = new Chronos("2025-10-15");
       expect(date.getDayOfYear()).toBe(288);
+    });
+  });
+
+  describe(".getWeekNumber", () => {
+    test("returns 1 for January 1st, 2025 (first week of the year)", () => {
+      const date = new Chronos("2025-01-01T00:00:00Z");
+      expect(date.getWeekNumber()).toBe(1);
+    });
+
+    test("returns 2 for January 8th, 2025", () => {
+      const date = new Chronos("2025-01-08T00:00:00Z");
+      expect(date.getWeekNumber()).toBe(2);
+    });
+
+    test("returns 52 for December 31st, 2023", () => {
+      const date = new Chronos("2023-12-31T00:00:00Z");
+      expect(date.getWeekNumber()).toBe(52);
+    });
+
+    test("returns 1 for January 4th, 2024 (first week of 2024)", () => {
+      const date = new Chronos("2024-01-04T00:00:00Z");
+      expect(date.getWeekNumber()).toBe(1);
+    });
+
+    test("returns 53 for December 31st, 2024 (leap year with 53 weeks)", () => {
+      const date = new Chronos("2024-12-31T00:00:00Z");
+      expect(date.getWeekNumber()).toBe(53);
+    });
+
+    test("returns 10 for March 5th, 2025", () => {
+      const date = new Chronos("2025-03-05T00:00:00Z");
+      expect(date.getWeekNumber()).toBe(10);
+    });
+
+    test("returns correct week number for a mid-year date (July 1st)", () => {
+      const date = new Chronos("2025-07-01T00:00:00Z");
+      expect(date.getWeekNumber()).toBe(27);
+    });
+
+    test("returns correct week number for a date late in the year (October 15th)", () => {
+      const date = new Chronos("2025-10-15T00:00:00Z");
+      expect(date.getWeekNumber()).toBe(42);
     });
   });
 });

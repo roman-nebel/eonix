@@ -417,12 +417,12 @@ class Chronos extends Date {
    * @since 1.0.0
    */
   getWeekNumber() {
-    const firstThursday = new Chronos(
-      this.getFullYear(),
-      0,
-      1 + ((4 - new Chronos(this.getFullYear(), 0, 1).getDay() + 7) % 7)
-    );
-    return Math.floor((this - firstThursday) / 604800000) + 1;
+    const jan4 = new Chronos(Chronos.UTC(this.getFullYear(), 0, 4));
+
+    const firstMonday = new Chronos(jan4);
+    firstMonday.setUTCDate(jan4.getUTCDate() - ((jan4.getUTCDay() + 6) % 7));
+
+    return Math.floor((this.getTime() - firstMonday.getTime()) / 604800000) + 1;
   }
 
   /**
