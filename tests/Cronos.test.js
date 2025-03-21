@@ -381,4 +381,46 @@ describe("Chronos", () => {
       expect(date.getWeekNumber()).toBe(42);
     });
   });
+
+  describe(".isLeapYear", () => {
+    test("returns true for a typical leap year (2024)", () => {
+      const date = new Chronos("2024-01-01T00:00:00Z");
+      expect(date.isLeapYear()).toBe(true);
+    });
+
+    test("returns false for a typical non-leap year (2023)", () => {
+      const date = new Chronos("2023-01-01T00:00:00Z");
+      expect(date.isLeapYear()).toBe(false);
+    });
+
+    test("returns false for a century year that is not divisible by 400 (1900)", () => {
+      const date = new Chronos("1900-01-01T00:00:00Z");
+      expect(date.isLeapYear()).toBe(false);
+    });
+
+    test("returns true for a century year that is divisible by 400 (2000)", () => {
+      const date = new Chronos("2000-01-01T00:00:00Z");
+      expect(date.isLeapYear()).toBe(true);
+    });
+
+    test("returns true for a recent leap year (2016)", () => {
+      const date = new Chronos("2016-01-01T00:00:00Z");
+      expect(date.isLeapYear()).toBe(true);
+    });
+
+    test("returns false for a recent non-leap year (2017)", () => {
+      const date = new Chronos("2017-01-01T00:00:00Z");
+      expect(date.isLeapYear()).toBe(false);
+    });
+
+    test("returns true for a future leap year (2080)", () => {
+      const date = new Chronos("2080-01-01T00:00:00Z");
+      expect(date.isLeapYear()).toBe(true);
+    });
+
+    test("returns false for a far future non-leap year (2100)", () => {
+      const date = new Chronos("2100-01-01T00:00:00Z");
+      expect(date.isLeapYear()).toBe(false);
+    });
+  });
 });
