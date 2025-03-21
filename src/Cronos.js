@@ -365,9 +365,10 @@ class Chronos extends Date {
    * @since 1.0.0
    */
   convertToTimeZone(newOffset) {
-    return new Chronos(
-      this.getTime() - this.getTimezoneOffset() * 60000 + newOffset * 3600000
-    );
+    const currentOffset = this.timeZoneOffset / -60;
+    const offsetDiff = newOffset + currentOffset;
+    this.setTime(this.getTime() - offsetDiff * 3600000);
+    return this;
   }
 
   /**

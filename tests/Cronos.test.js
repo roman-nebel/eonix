@@ -1,32 +1,6 @@
 const Chronos = require("../index.js");
 
 describe("Chronos", () => {
-  describe(".setTimeZoneOffset", () => {
-    test("modifies the current instance instead of creating a new one", () => {
-      const date = new Chronos("2025-03-21T12:00:00Z");
-      date.setTimeZoneOffset(5); // Set offset to UTC+5
-      expect(date.timeZoneOffset).toBe(-300); // -300 minutes = UTC+5
-    });
-
-    test("correctly adjusts time when changing the time zone", () => {
-      const date = new Chronos("2025-03-21T12:00:00Z");
-      date.setTimeZoneOffset(3); // Set offset to UTC+3
-      expect(date.getUTCHours()).toBe(15); // Was 12:00 UTC, now 15:00 UTC+3
-    });
-
-    test("handles negative offsets correctly", () => {
-      const date = new Chronos("2025-03-21T12:00:00Z");
-      date.setTimeZoneOffset(-7); // Set offset to UTC-7
-      expect(date.getUTCHours()).toBe(5); // Was 12:00 UTC, now 5:00 UTC-7
-    });
-
-    test("works when crossing UTC 0", () => {
-      const date = new Chronos("2025-03-21T00:00:00Z");
-      date.setTimeZoneOffset(-1); // Set offset to UTC-1
-      expect(date.getUTCHours()).toBe(23); // Was 00:00 UTC, now 23:00 UTC-1 (previous day)
-    });
-  });
-
   describe(".clone", () => {
     test("creates a new object without modifying the original", () => {
       const date = new Chronos("2025-03-21T12:00:00Z");
@@ -201,6 +175,64 @@ describe("Chronos", () => {
       expect(() => date.add({ years: "two" })).toThrow(
         "All parameters must be numbers"
       );
+    });
+  });
+
+  describe(".setTimeZoneOffset", () => {
+    test("modifies the current instance instead of creating a new one", () => {
+      const date = new Chronos("2025-03-21T12:00:00Z");
+      date.setTimeZoneOffset(5); // Set offset to UTC+5
+      expect(date.timeZoneOffset).toBe(-300); // -300 minutes = UTC+5
+    });
+
+    test("correctly adjusts time when changing the time zone", () => {
+      const date = new Chronos("2025-03-21T12:00:00Z");
+      date.setTimeZoneOffset(3); // Set offset to UTC+3
+      expect(date.getUTCHours()).toBe(15); // Was 12:00 UTC, now 15:00 UTC+3
+    });
+
+    test("handles negative offsets correctly", () => {
+      const date = new Chronos("2025-03-21T12:00:00Z");
+      date.setTimeZoneOffset(-7); // Set offset to UTC-7
+      expect(date.getUTCHours()).toBe(5); // Was 12:00 UTC, now 5:00 UTC-7
+    });
+
+    test("works when crossing UTC 0", () => {
+      const date = new Chronos("2025-03-21T00:00:00Z");
+      date.setTimeZoneOffset(-1); // Set offset to UTC-1
+      expect(date.getUTCHours()).toBe(23); // Was 00:00 UTC, now 23:00 UTC-1 (previous day)
+    });
+  });
+
+  describe(".convertToTimeZone", () => {
+    test("keeps the same local time while shifting UTC time", () => {
+      const date = new Chronos("2025-03-21T12:00:00Z");
+      date.convertToTimeZone(5);
+      expect(date.getUTCHours()).toBe(6);
+    });
+
+    test("handles negative offsets correctly", () => {
+      const date = new Chronos("2025-03-21T12:00:00Z");
+      date.convertToTimeZone(-3);
+      expect(date.getUTCHours()).toBe(14);
+    });
+
+    test("does not change UTC time when offset remains the same", () => {
+      const date = new Chronos("2025-03-21T12:00:00Z");
+      date.convertToTimeZone(0);
+      expect(date.getUTCHours()).toBe(11);
+    });
+
+    test("correctly shifts time when crossing UTC 0", () => {
+      const date = new Chronos("2025-03-21T01:00:00Z");
+      date.convertToTimeZone(-2);
+      expect(date.getUTCHours()).toBe(2);
+    });
+
+    test("correctly shifts time when crossing the international date line", () => {
+      const date = new Chronos("2025-03-21T23:00:00Z");
+      date.convertToTimeZone(12);
+      expect(date.getUTCHours()).toBe(10);
     });
   });
 });
