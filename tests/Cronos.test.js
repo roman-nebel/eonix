@@ -287,4 +287,56 @@ describe("Chronos", () => {
       expect(date.getWeekday()).toBe(1); // Monday
     });
   });
+
+  describe("Chronos getDayOfYear", () => {
+    test("returns 1 for January 1st", () => {
+      const date = new Chronos("2025-01-01");
+      expect(date.getDayOfYear()).toBe(1);
+    });
+
+    test("returns 32 for February 1st (non-leap year)", () => {
+      const date = new Chronos("2025-02-01");
+      expect(date.getDayOfYear()).toBe(32);
+    });
+
+    test("returns 60 for February 29th (leap year)", () => {
+      const date = new Chronos("2024-02-29"); // Leap year
+      expect(date.getDayOfYear()).toBe(60);
+    });
+
+    test("returns 59 for February 28th (non-leap year)", () => {
+      const date = new Chronos("2025-02-28"); // Non-leap year
+      expect(date.getDayOfYear()).toBe(59);
+    });
+
+    test("returns 365 for December 31st (non-leap year)", () => {
+      const date = new Chronos("2025-12-31");
+      expect(date.getDayOfYear()).toBe(365);
+    });
+
+    test("returns 366 for December 31st (leap year)", () => {
+      const date = new Chronos("2024-12-31"); // Leap year
+      expect(date.getDayOfYear()).toBe(366);
+    });
+
+    test("correctly handles March 1st after leap year February", () => {
+      const date = new Chronos("2024-03-01");
+      expect(date.getDayOfYear()).toBe(61);
+    });
+
+    test("correctly handles March 1st in a non-leap year", () => {
+      const date = new Chronos("2025-03-01");
+      expect(date.getDayOfYear()).toBe(60);
+    });
+
+    test("handles mid-year date correctly (July 1st)", () => {
+      const date = new Chronos("2025-07-01");
+      expect(date.getDayOfYear()).toBe(182);
+    });
+
+    test("handles a date in the second half of the year (October 15th)", () => {
+      const date = new Chronos("2025-10-15");
+      expect(date.getDayOfYear()).toBe(288);
+    });
+  });
 });

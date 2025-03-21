@@ -400,9 +400,8 @@ class Chronos extends Date {
    * @since 1.0.0
    */
   getDayOfYear() {
-    return Math.floor(
-      (this - new Chronos(this.getFullYear(), 0, 0)) / 86400000
-    );
+    const startOfYear = new Chronos(Chronos.UTC(this.getFullYear(), 0, 1));
+    return Math.floor((this.getTime() - startOfYear.getTime()) / 86400000) + 1;
   }
 
   /**
