@@ -50,11 +50,6 @@ class Chronos extends Date {
     return new Diff(start, end);
   }
 
-  constructor(date) {
-    super(date);
-    this.timeZoneOffset = this.getTimezoneOffset();
-  }
-
   /**
    * Clones the current Chronos instance.
    *
@@ -70,7 +65,7 @@ class Chronos extends Date {
   clone({ offset = null } = {}) {
     const cloned = new Chronos(this);
     if (offset !== null) {
-      cloned.setTimeZoneOffset(offset);
+      cloned.convertToTimeZone(offset);
     }
     return cloned;
   }
@@ -330,48 +325,6 @@ class Chronos extends Date {
   }
 
   /**
-   * Sets the timezone offset of the current date.
-   *
-   * @param {number} newOffset - New timezone offset in hours.
-   *
-   * @returns {Chronos} A Chronos instance.
-   *
-   * @example
-   * const date = new Chronos('2023-01-01');
-   * const result = date.setTimeZoneOffset(2);
-   * console.log(result); // Tue Jan 01 2023 02:00:00 GMT+0000
-   *
-   * @since 1.0.0
-   */
-  setTimeZoneOffset(newOffset) {
-    this.timeZoneOffset = newOffset * -60;
-    const utcTime = this.getTime() - this.timeZoneOffset * 60000;
-    this.setTime(utcTime);
-    return this;
-  }
-
-  /**
-   * Converts the timezone offset of the current date.
-   *
-   * @param {number} newOffset - New timezone offset in hours.
-   *
-   * @returns {Chronos} A Chronos instance.
-   *
-   * @example
-   * const date = new Chronos('2023-01-01');
-   * const result = date.convertToTimeZone(2);
-   * console.log(result); // Tue Jan 01 2023 02:00:00 GMT+0000
-   *
-   * @since 1.0.0
-   */
-  convertToTimeZone(newOffset) {
-    const currentOffset = this.timeZoneOffset / -60;
-    const offsetDiff = newOffset + currentOffset;
-    this.setTime(this.getTime() - offsetDiff * 3600000);
-    return this;
-  }
-
-  /**
    * Returns the day of the week for the current date.
    *
    * @returns {number} Day of the week (1-7).
@@ -470,34 +423,29 @@ class Chronos extends Date {
    *
    * @since 1.0.0
    */
-  toUTC() {
-    return new Chronos(
-      Chronos.UTC(
-        this.getFullYear(),
-        this.getMonth(),
-        this.getDate(),
-        this.getHours() + this.getTimezoneOffset() / 60,
-        this.getMinutes(),
-        this.getSeconds(),
-        this.getMilliseconds()
-      )
-    );
+  convertToUTC() {
+    const utcTime = this.getTime() + this.getTimezoneOffset() * 60000;
+    this.setTime(utcTime);
+    return this;
   }
 
   /**
-   * Returns locale date and time in the UTC timezone.
+   * Converts the timezone offset of the current date.
+   *
+   * @param {number} newOffset - New timezone offset in hours.
    *
    * @returns {Chronos} A Chronos instance.
    *
    * @example
    * const date = new Chronos('2023-01-01');
-   * const result = date.toUTC();
-   * console.log(result); // Tue Jan 01 2023 00:00:00 GMT+0000
+   * const result = date.convertToTimeZone(2);
+   * console.log(result); // Tue Jan 01 2023 02:00:00 GMT+0000
    *
    * @since 1.0.0
    */
-  inUTC() {
-    return new Chronos(this.getTime() + this.getTimezoneOffset() * 60000);
+  convertToTimeZone(newOffset) {
+    this.setTime(this.getTime() - newOffset * 3600000);
+    return this;
   }
 
   /**
