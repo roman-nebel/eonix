@@ -1,3 +1,3 @@
-const Chronos = require("./src/Cronos");
+import Chronos from "./src/Cronos";
 
-module.exports = Chronos;
+export default Chronos;
