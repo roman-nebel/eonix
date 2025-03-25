@@ -1,318 +1,155 @@
 # Chronos
 
-Chronos is an extended version of the native Date class in JavaScript. It provides additional utility methods for date manipulation, time zone conversions, and difference calculations.
+A modern JavaScript date manipulation library that extends the native Date class with powerful utility methods for date calculations, timezone conversions, and difference calculations.
+
+## Features
+
+- Extends native Date class with additional functionality
+- Comprehensive date difference calculations
+- Timezone conversion utilities
+- Leap year handling
+- Week and day calculations
+- Date arithmetic operations
+- Full TypeScript support
 
 ## Installation
 
-Chronos can be used in any JavaScript project. To install it via npm:
-
-`npm install chronos`
+```bash
+npm install chronos
+```
 
 ## Usage
 
-Import the Chronos class into your project:
+```javascript
+import Chronos from "chronos";
 
-`import Chronos from 'chronos';`
+// Create a new Chronos instance
+const date = new Chronos("2023-01-01");
 
-## Static Methods
+// Add time to a date
+date.add({ years: 1, months: 2, days: 3 });
 
-### `sortDates(date1, date2): [Chronos, Chronos]`
+// Calculate difference between dates
+const diff = Chronos.diff("2023-01-01", "2023-06-30");
+console.log(diff.inMonths()); // 5
+console.log(diff.inDays()); // 180
+
+// Sort dates
+const [earlier, later] = Chronos.sort("2023-06-30", "2023-01-01");
+```
+
+## API Documentation
+
+### Static Methods
+
+#### `Chronos.sort(...dates)`
 
 Creates a sorted array of Chronos instances based on the given dates.
 
-**Parameters:**
-
-* `date1: string | number | Date`
-* `date2: string | number | Date`
-
-> This method contains the third argument `absolute (boolean)` thruly by default. It uses by other class methods to return sorted or unsorted dates.
-
-**Example:**
-
-```
-const [date1, date2] = Chronos.createSortedDates('2023-01-01', '2023-06-30', false);
-console.log(date1, date2);
+```javascript
+const [date1, date2] = Chronos.sort("2023-01-01", "2023-06-30");
 ```
 
--
+#### `Chronos.diff(start, end)`
 
-### `getDiff(date1, date2, options?)`
+Calculates the difference between two dates.
 
-Calculates the difference between two dates with optional units.
-
-**Parameters:**
-
-* `date1: string | number | Date`
-* `date2: string | number | Date`
-* o`ptions?: Object`
-	* `withWeeks: boolean [default: false]`: Include weeks in calculation.
-	* `withMonths: boolean [default: true]`: Include months in calculation.
-	* `absolute: boolean [default: false]`: Return absolute values.
-
-**Returns:**
-
-* `{ years, months?, weeks?, days, hours, minutes, seconds, milliseconds }`: The difference object.
-
-**Example:**
-
-```
-const diff = Chronos.getDiff('2023-01-01', '2023-06-30', { withWeeks: true, withMonths: true });
-console.log(diff);
+```javascript
+const diff = Chronos.diff("2023-01-01", "2023-06-30");
 ```
 
--
+### Instance Methods
 
-### `getDiffInUnits(date1, date2, unit, absolute): number`
+#### Date Arithmetic
 
-Generic method that calculates the difference between two dates in a specific unit.
+- `add({ years, months, weeks, days, hours, minutes, seconds, milliseconds })`
+- `addDate({ years, months, weeks, days })`
+- `addTime({ hours, minutes, seconds, milliseconds })`
+- `addYears(years)`
+- `addMonths(months)`
+- `addWeeks(weeks)`
+- `addDays(days)`
+- `addHours(hours)`
+- `addMinutes(minutes)`
+- `addSeconds(seconds)`
+- `addMilliseconds(milliseconds)`
 
-**Parameters:**
+#### Date Information
 
-* `date1: string | number | Date`
-* `date2: string | number | Date`
-* `unit: "milliseconds" | "seconds" | "minutes" | "hours" | "days" | "weeks"`: Unit of difference.
-* `absolute: boolean [default: false]`: Return absolute values.
+- `getWeekday()` - Returns day of week (1-7)
+- `getDayOfYear()` - Returns day of year
+- `getWeekNumber()` - Returns week number
+- `isLeapYear()` - Checks if date is in a leap year
+- `isUTC()` - Checks if date is in UTC
 
-> This method excludes the `months` and `years` units.
+#### Timezone Operations
 
-**Example:**
+- `convertToUTC()` - Converts date to UTC
+- `convertToTimeZone(offset)` - Converts to specified timezone offset
+- `toDate()` - Converts to native Date object
 
-```
-const diff = Chronos.getDiffInUnits('2023-01-01', '2023-06-30', 'days');
-console.log(diff); // 180
-```
+### Diff Class Methods
 
-### Unit-Specific Methods
+#### Generic Difference Calculation
 
-Each of these methods is a shortcut for getDiffInUnits.
+- `inUnits(units)` - Calculates the difference between two dates in specified units
+  ```javascript
+  const diff = Chronos.diff("2023-01-01", "2023-06-30");
+  const result = diff.inUnits(["years", "months", "days"]);
+  // Result: { years: 0, months: 5, days: 29 }
+  ```
+  Available units: "years", "months", "weeks", "days", "hours", "minutes", "seconds", "milliseconds"
+  If no units are specified, all units will be calculated.
 
-* `getDiffInMilliseconds()`
-* `getDiffInSeconds()`
-* `getDiffInMinutes()`
-* `getDiffInHours()`
-* `getDiffInDays()`
-* `getDiffInWeeks()`
-* `getDiffInMonths()`
-* `getDiffInYears()`
+#### Difference Calculations
 
-Each method follows this signature:
-`Chronos.getDiffIn<unit>(date1, date2, options)`
+- `inYears({ absolute = false })`
+- `inMonths({ absolute = false })`
+- `inWeeks({ absolute = false })`
+- `inDays({ absolute = false })`
+- `inHours({ absolute = false })`
+- `inMinutes({ absolute = false })`
+- `inSeconds({ absolute = false })`
+- `inMilliseconds({ absolute = false })`
 
-**Example:**
+## Examples
 
-```
-const diffInHours = Chronos.getDiffInHours('2023-01-01', '2023-06-30');
-console.log(diffInHours);
-```
+### Date Arithmetic
 
-## Class: Chronos
-
-### `new Chronos(date: string | number | Date)`
-
-Creates a new instance of Chronos.
-
-### Instant Methods
-
-### `clone(): Chronos`
-
-Clones the current Chronos instance.
-
-**Example**
-
-```
-const date = new Chronos('2023-01-01');
-const clone = date.clone();
-console.log(clone); // Tue Jan 01 2023 00:00:00 GMT+0000
-```
-
-### `add(amount): Chronos`
-
-Adds a specific amount to the current date.
-
-**Parameters**
-
-* `amount: Object`
-	* `years: number [default: 0]`
-	* `months: number [default: 0]`
-	* `weeks: number [default: 0]`
-	* `days: number [default: 0]`
-	* `hours: number [default: 0]`
-	* `minutes: number [default: 0]`
-	* `seconds: number [default: 0]`
-	* `milliseconds: number [default: 0]`
-
-**Example**
-
-```
-const date = new Chronos('2023-01-01');
-const result = date.add({ years: 1, months: 2, weeks: 3, days: 4, hours: 5, minutes: 6, seconds: 7, milliseconds: 8 });
-console.log(result); // Wed Mar 22 2024 05:06:07 GMT+0000
+```javascript
+const date = new Chronos("2023-01-01");
+date.add({ years: 1, months: 2, days: 3 });
+// Result: 2024-03-04
 ```
 
-**Shorcuts**
+### Date Differences
 
-Each of these methods is a shortcut for add(). 
-
-* `addMilliseconds()`
-* `addSeconds()`
-* `addMinutes()`
-* `addHours()`
-* `addDays()`
-* `addWeeks()`
-* `addMonths()`
-* `addYears()`
-
-Each method follows this signature:
-`new Chronos().add<unit>(unitValue: number)`
-
-### `addDate(amount): Chronos`
-
-Adds a specific date amount to the current date.
-
-**Parameters**
-
-* `amount: Object`
-	* `years: number [default: 0]`
-	* `months: number [default: 0]`
-	* `weeks: number [default: 0]`
-	* `days: number [default: 0]`
-
-**Example**
-
-```
-const date = new Chronos('2023-01-01');
-const result = date.addDate({ years: 1, months: 2, weeks: 3, days: 4 });
-console.log(result); // Wed Mar 22 2024 00:00:00 GMT+0000
+```javascript
+const diff = Chronos.diff("2023-01-01", "2023-06-30");
+console.log(diff.inMonths()); // 5
+console.log(diff.inDays()); // 180
 ```
 
-### `addTime(amount): Chronos`
+### Timezone Conversion
 
-Adds a specific time amount to the current date.
-
-**Parameters**
-
-* `amount: Object`
-	* `hours: number [default: 0]`
-	* `minutes: number [default: 0]`
-	* `seconds: number [default: 0]`
-	* `milliseconds: number [default: 0]`
-
-**Example**
-
-```
-const date = new Chronos('2023-01-01');
-const result = date.addTime({ hours: 1, minutes: 2, seconds: 3, milliseconds: 4 });
-console.log(result); // Tue Jan 01 2023 01:02:03 GMT+0000
+```javascript
+const date = new Chronos("2023-01-01");
+date.convertToTimeZone(2); // Convert to UTC+2
 ```
 
-### `setTimeZoneOffset(newOffset: number): Chronos`
+### Leap Year Handling
 
-Sets the timezone offset of the current date.
-
-**Example**
-
-```
-const date = new Chronos('2023-01-01');
-const result = date.setTimeZoneOffset(2);
-console.log(result); // Tue Jan 01 2023 02:00:00 GMT+0000
-```
-
-### `convertToTimeZone(newOffset: number): Chronos`
-
-Converts the timezone offset of the current date.
-
-**Example**
-
-```
-const date = new Chronos('2023-01-01');
-const result = date.convertToTimeZone(2);
-console.log(result); // Tue Jan 01 2023 02:00:00 GMT+0000
-```
-
-### `getWeekday(): number [1-7]`
-
-Returns the day of the week for the current date.
-
-**Example**
-
-```
-const date = new Chronos('2023-01-01');
-const result = date.getWeekday();
-console.log(result); // 7 (Sunday)
-```
-
-### `getDayOfYear(): number [1-366]`
-
-Returns the day of the year for the current date.
-
-**Example**
-
-```
-const date = new Chronos('2023-01-01');
-const result = date.getDayOfYear();
-console.log(result); // 1
-```
-
-### `getWeekNumber(): number [1-53]`
-
-Returns the week number for the current date.
-
-**Example**
-
-```
-const date = new Chronos('2023-01-01');
-const result = date.getWeekNumber();
-console.log(result); // 1
-```
-
-### `isLeapYear(): boolean`
-
-Checks if the current date is a leap year.
-
-**Example**
-
-```
-const date = new Chronos('2020-01-01');
-const result = date.isLeapYear();
-console.log(result); // true
-```
-
-### `isUTC(): boolean`
-
-Checks if the current date is UTC.
-
-**Example**
-
-```
-const date = new Chronos('2023-01-01');
-const result = date.isUTC();
-console.log(result); // true
-```
-
-### `toUTC(): Chronos`
-
-Converts the current date to UTC.
-
-**Example**
-
-```
-const date = new Chronos('2023-01-01');
-const result = date.toUTC();
-console.log(result); // Tue Jan 01 2023 00:00:00 GMT+0000
-```
-
-### `toDate(): Date`
-
-Converts the current date to a Date object.
-
-**Example**
-
-```
-const date = new Chronos('2023-01-01');
-const result = date.toDate();
-console.log(result); // Tue Jan 01 2023 00:00:00 GMT+0000
+```javascript
+const date = new Chronos("2020-02-29");
+console.log(date.isLeapYear()); // true
 ```
 
 ## License
 
 MIT
+
+## Author
+
+- Roman Nebel
+- Email: r@nebel.im
+- Website: https://nebel.im
