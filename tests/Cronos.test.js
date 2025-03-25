@@ -2,20 +2,20 @@ import Chronos from "../index.js";
 
 describe("Chronos", () => {
   describe(".clone", () => {
-    test("creates a new object without modifying the original", () => {
+    test("creates a deep copy of the Chronos instance without modifying the original", () => {
       const date = new Chronos("2025-03-21T12:00:00Z");
       const cloned = date.clone();
       expect(cloned).not.toBe(date);
       expect(cloned.getTime()).toBe(date.getTime());
     });
 
-    test("clones the object with a new time zone offset", () => {
+    test("creates a clone with a new timezone offset while preserving the original", () => {
       const date = new Chronos("2025-03-21T12:00:00Z");
       const cloned = date.clone({ offset: 4 }); // Clone with UTC+4
       expect(cloned.getUTCHours()).toBe(8); // Was 12:00 UTC, now 12:00 UTC+4
     });
 
-    test("does not modify the original object when cloning with a new offset", () => {
+    test("maintains original object's timezone when cloning with a new offset", () => {
       const date = new Chronos("2025-03-21T12:00:00Z");
       const cloned = date.clone({ offset: -2 });
       expect(date.getUTCHours()).toBe(12); // Original object remains unchanged
@@ -24,16 +24,16 @@ describe("Chronos", () => {
   });
 
   describe(".sort", () => {
-    test("should throw an error when no arguments are provided", () => {
+    test("throws an error when no arguments are provided", () => {
       expect(() => Chronos.sort()).toThrow();
     });
 
-    test("should return the same date when one argument is provided", () => {
+    test("returns a single-element array when one argument is provided", () => {
       const date = new Date();
       expect(Chronos.sort(date)).toEqual([date]);
     });
 
-    test("should return sorted dates when multiple arguments are provided", () => {
+    test("sorts multiple dates in ascending order", () => {
       const dates = Array(12)
         .fill()
         .map(() => new Date());
@@ -43,17 +43,17 @@ describe("Chronos", () => {
       );
     });
 
-    test("should return same date when all arguments are the same", () => {
+    test("preserves duplicate dates in the sorted array", () => {
       const date = new Date();
       expect(Chronos.sort(date, date)).toEqual([date, date]);
     });
 
-    test("should sort dates when provided as string", () => {
+    test("sorts dates provided as ISO string format", () => {
       const [earlier, later] = Chronos.sort("2023-06-30", "2023-01-01");
       expect(earlier.getTime()).toBeLessThanOrEqual(later.getTime());
     });
 
-    test("should sort dates when provided as number (UNIX timestamp)", () => {
+    test("sorts dates provided as UNIX timestamps", () => {
       const [earlier, later] = Chronos.sort(
         new Date("2023-06-30").valueOf(),
         new Date("2023-01-01").valueOf()
@@ -61,7 +61,7 @@ describe("Chronos", () => {
       expect(earlier.getTime()).toBeLessThanOrEqual(later.getTime());
     });
 
-    test("should sort dates when provided as instance of Date", () => {
+    test("sorts dates provided as Date objects", () => {
       const [earlier, later] = Chronos.sort(
         new Date("2023-06-30"),
         new Date("2023-01-01")
@@ -71,106 +71,106 @@ describe("Chronos", () => {
   });
 
   describe(".add", () => {
-    test("should add years", () => {
+    test("adds years while preserving month and day", () => {
       const date = new Chronos("2020-01-01T00:00:00Z");
       date.add({ years: 2 });
       expect(date.toISOString()).toBe("2022-01-01T00:00:00.000Z");
     });
 
-    test("should add months", () => {
+    test("adds months while handling month-end transitions", () => {
       const date = new Chronos("2020-01-01T00:00:00Z");
       date.add({ months: 3 });
       expect(date.toISOString()).toBe("2020-04-01T00:00:00.000Z");
     });
 
-    test("should add weeks", () => {
+    test("adds weeks while preserving day of week", () => {
       const date = new Chronos("2020-01-01T00:00:00Z");
       date.add({ weeks: 2 });
       expect(date.toISOString()).toBe("2020-01-15T00:00:00.000Z");
     });
 
-    test("should add days", () => {
+    test("adds days while handling month transitions", () => {
       const date = new Chronos("2020-01-01T00:00:00Z");
       date.add({ days: 10 });
       expect(date.toISOString()).toBe("2020-01-11T00:00:00.000Z");
     });
 
-    test("should add hours", () => {
+    test("adds hours while preserving minutes and seconds", () => {
       const date = new Chronos("2020-01-01T00:00:00Z");
       date.add({ hours: 5 });
       expect(date.toISOString()).toBe("2020-01-01T05:00:00.000Z");
     });
 
-    test("should add minutes", () => {
+    test("adds minutes while preserving seconds", () => {
       const date = new Chronos("2020-01-01T00:00:00Z");
       date.add({ minutes: 30 });
       expect(date.toISOString()).toBe("2020-01-01T00:30:00.000Z");
     });
 
-    test("should add seconds", () => {
+    test("adds seconds while preserving milliseconds", () => {
       const date = new Chronos("2020-01-01T00:00:00Z");
       date.add({ seconds: 45 });
       expect(date.toISOString()).toBe("2020-01-01T00:00:45.000Z");
     });
 
-    test("should add milliseconds", () => {
+    test("adds milliseconds with precision", () => {
       const date = new Chronos("2020-01-01T00:00:00Z");
       date.add({ milliseconds: 500 });
       expect(date.toISOString()).toBe("2020-01-01T00:00:00.500Z");
     });
 
-    test("should handle leap years (adding one year to Feb 29)", () => {
+    test("handles leap year transition when adding years", () => {
       const date = new Chronos("2020-02-29T00:00:00Z");
       date.add({ years: 1 });
       expect(date.toISOString()).toBe("2021-03-01T00:00:00.000Z");
     });
 
-    test("should handle negative values (subtracting)", () => {
+    test("supports negative values for subtraction", () => {
       const date = new Chronos("2020-01-01T00:00:00Z");
       date.add({ years: -1, months: -1, days: -10 });
       expect(date.toISOString()).toBe("2018-11-21T00:00:00.000Z");
     });
 
-    test("should handle daylight saving time changes", () => {
+    test("handles daylight saving time transitions correctly", () => {
       const date = new Chronos("2023-03-12T01:00:00-08:00");
       date.add({ hours: 2 });
       expect(date.toISOString()).toBe("2023-03-12T11:00:00.000Z");
     });
 
-    test("should handle large values correctly", () => {
+    test("handles large values without overflow", () => {
       const date = new Chronos("2000-01-01T00:00:00Z");
       date.add({ years: 1000, months: 500, days: 10000, hours: 1000 });
       expect(date.toISOString()).toMatch("3069-02-27T16:00:00.000Z");
     });
 
-    test("should handle fractional values (rounding)", () => {
+    test("rounds fractional values to nearest integer", () => {
       const date = new Chronos("2020-01-01T00:00:00Z");
       date.add({ days: 1.5 });
       expect(date.toISOString()).toBe("2020-01-02T00:00:00.000Z");
     });
 
-    test("should throw error if argument is missing", () => {
+    test("throws error when no argument is provided", () => {
       const date = new Chronos("2020-01-01T00:00:00Z");
       expect(() => date.add()).toThrow(
         "The argument must be a non-empty object"
       );
     });
 
-    test("should throw error if argument is not an object", () => {
+    test("throws error when argument is not an object", () => {
       const date = new Chronos("2020-01-01T00:00:00Z");
       expect(() => date.add(123)).toThrow(
         "The argument must be a non-empty object"
       );
     });
 
-    test("should throw error if argument is an empty object", () => {
+    test("throws error when argument is an empty object", () => {
       const date = new Chronos("2020-01-01T00:00:00Z");
       expect(() => date.add({})).toThrow(
         "The argument must be a non-empty object"
       );
     });
 
-    test("should throw error if parameter value is not a number", () => {
+    test("throws error when parameter value is not a number", () => {
       const date = new Chronos("2020-01-01T00:00:00Z");
       expect(() => date.add({ years: "two" })).toThrow(
         "All parameters must be numbers"
@@ -179,31 +179,31 @@ describe("Chronos", () => {
   });
 
   describe(".convertToTimeZone", () => {
-    test("keeps the same local time while shifting UTC time", () => {
+    test("adjusts UTC time while preserving local time", () => {
       const date = new Chronos("2025-03-21T12:00:00Z");
       date.convertToTimeZone(6);
       expect(date.getUTCHours()).toBe(6);
     });
 
-    test("handles negative offsets correctly", () => {
+    test("handles negative timezone offsets correctly", () => {
       const date = new Chronos("2025-03-21T12:00:00Z");
       date.convertToTimeZone(-3);
       expect(date.getUTCHours()).toBe(15);
     });
 
-    test("does not change UTC time when offset remains the same", () => {
+    test("preserves time when converting to same timezone", () => {
       const date = new Chronos("2025-03-21T12:00:00Z");
       date.convertToTimeZone(0);
       expect(date.getUTCHours()).toBe(12);
     });
 
-    test("correctly shifts time when crossing UTC 0", () => {
+    test("handles timezone conversion across UTC midnight", () => {
       const date = new Chronos("2025-03-21T01:00:00Z");
       date.convertToTimeZone(-2);
       expect(date.getUTCHours()).toBe(3);
     });
 
-    test("correctly shifts time when crossing the international date line", () => {
+    test("handles timezone conversion across international date line", () => {
       const date = new Chronos("2025-03-21T23:00:00Z");
       date.convertToTimeZone(12);
       expect(date.getUTCHours()).toBe(11);
@@ -211,52 +211,52 @@ describe("Chronos", () => {
   });
 
   describe(".getWeekday", () => {
-    test("returns Monday (1) for a Monday date", () => {
+    test("returns 1 for Monday", () => {
       const date = new Chronos("2025-03-24"); // Monday
       expect(date.getWeekday()).toBe(1);
     });
 
-    test("returns Tuesday (2) for a Tuesday date", () => {
+    test("returns 2 for Tuesday", () => {
       const date = new Chronos("2025-03-25"); // Tuesday
       expect(date.getWeekday()).toBe(2);
     });
 
-    test("returns Wednesday (3) for a Wednesday date", () => {
+    test("returns 3 for Wednesday", () => {
       const date = new Chronos("2025-03-26"); // Wednesday
       expect(date.getWeekday()).toBe(3);
     });
 
-    test("returns Thursday (4) for a Thursday date", () => {
+    test("returns 4 for Thursday", () => {
       const date = new Chronos("2025-03-27"); // Thursday
       expect(date.getWeekday()).toBe(4);
     });
 
-    test("returns Friday (5) for a Friday date", () => {
+    test("returns 5 for Friday", () => {
       const date = new Chronos("2025-03-28"); // Friday
       expect(date.getWeekday()).toBe(5);
     });
 
-    test("returns Saturday (6) for a Saturday date", () => {
+    test("returns 6 for Saturday", () => {
       const date = new Chronos("2025-03-29"); // Saturday
       expect(date.getWeekday()).toBe(6);
     });
 
-    test("returns Sunday (7) for a Sunday date", () => {
+    test("returns 7 for Sunday", () => {
       const date = new Chronos("2025-03-30"); // Sunday
       expect(date.getWeekday()).toBe(7);
     });
 
-    test("handles leap year correctly (Feb 29, 2024 is Thursday)", () => {
+    test("handles leap year February 29th correctly", () => {
       const date = new Chronos("2024-02-29");
       expect(date.getWeekday()).toBe(4); // Thursday
     });
 
-    test("handles January 1st of a non-leap year (2025-01-01 is Wednesday)", () => {
+    test("handles New Year's Day in non-leap year", () => {
       const date = new Chronos("2025-01-01");
       expect(date.getWeekday()).toBe(3); // Wednesday
     });
 
-    test("handles January 1st of a leap year (2024-01-01 is Monday)", () => {
+    test("handles New Year's Day in leap year", () => {
       const date = new Chronos("2024-01-01");
       expect(date.getWeekday()).toBe(1); // Monday
     });
@@ -268,138 +268,138 @@ describe("Chronos", () => {
       expect(date.getDayOfYear()).toBe(1);
     });
 
-    test("returns 32 for February 1st (non-leap year)", () => {
+    test("returns correct day for February 1st in non-leap year", () => {
       const date = new Chronos("2025-02-01");
       expect(date.getDayOfYear()).toBe(32);
     });
 
-    test("returns 60 for February 29th (leap year)", () => {
+    test("returns correct day for February 29th in leap year", () => {
       const date = new Chronos("2024-02-29"); // Leap year
       expect(date.getDayOfYear()).toBe(60);
     });
 
-    test("returns 59 for February 28th (non-leap year)", () => {
+    test("returns correct day for February 28th in non-leap year", () => {
       const date = new Chronos("2025-02-28"); // Non-leap year
       expect(date.getDayOfYear()).toBe(59);
     });
 
-    test("returns 365 for December 31st (non-leap year)", () => {
+    test("returns 365 for December 31st in non-leap year", () => {
       const date = new Chronos("2025-12-31");
       expect(date.getDayOfYear()).toBe(365);
     });
 
-    test("returns 366 for December 31st (leap year)", () => {
+    test("returns 366 for December 31st in leap year", () => {
       const date = new Chronos("2024-12-31"); // Leap year
       expect(date.getDayOfYear()).toBe(366);
     });
 
-    test("correctly handles March 1st after leap year February", () => {
+    test("handles March 1st after leap year February correctly", () => {
       const date = new Chronos("2024-03-01");
       expect(date.getDayOfYear()).toBe(61);
     });
 
-    test("correctly handles March 1st in a non-leap year", () => {
+    test("handles March 1st in non-leap year correctly", () => {
       const date = new Chronos("2025-03-01");
       expect(date.getDayOfYear()).toBe(60);
     });
 
-    test("handles mid-year date correctly (July 1st)", () => {
+    test("handles mid-year date correctly", () => {
       const date = new Chronos("2025-07-01");
       expect(date.getDayOfYear()).toBe(182);
     });
 
-    test("handles a date in the second half of the year (October 15th)", () => {
+    test("handles late-year date correctly", () => {
       const date = new Chronos("2025-10-15");
       expect(date.getDayOfYear()).toBe(288);
     });
   });
 
   describe(".getWeekNumber", () => {
-    test("returns 1 for January 1st, 2025 (first week of the year)", () => {
+    test("returns 1 for first week of the year", () => {
       const date = new Chronos("2025-01-01T00:00:00Z");
       expect(date.getWeekNumber()).toBe(1);
     });
 
-    test("returns 2 for January 8th, 2025", () => {
+    test("returns correct week number for second week", () => {
       const date = new Chronos("2025-01-08T00:00:00Z");
       expect(date.getWeekNumber()).toBe(2);
     });
 
-    test("returns 52 for December 31st, 2023", () => {
+    test("returns correct week number for last week of previous year", () => {
       const date = new Chronos("2023-12-31T00:00:00Z");
       expect(date.getWeekNumber()).toBe(52);
     });
 
-    test("returns 1 for January 4th, 2024 (first week of 2024)", () => {
+    test("returns 1 for first week of leap year", () => {
       const date = new Chronos("2024-01-04T00:00:00Z");
       expect(date.getWeekNumber()).toBe(1);
     });
 
-    test("returns 53 for December 31st, 2024 (leap year with 53 weeks)", () => {
+    test("returns 53 for last week of leap year", () => {
       const date = new Chronos("2024-12-31T00:00:00Z");
       expect(date.getWeekNumber()).toBe(53);
     });
 
-    test("returns 10 for March 5th, 2025", () => {
+    test("returns correct week number for early spring", () => {
       const date = new Chronos("2025-03-05T00:00:00Z");
       expect(date.getWeekNumber()).toBe(10);
     });
 
-    test("returns correct week number for a mid-year date (July 1st)", () => {
+    test("returns correct week number for mid-year", () => {
       const date = new Chronos("2025-07-01T00:00:00Z");
       expect(date.getWeekNumber()).toBe(27);
     });
 
-    test("returns correct week number for a date late in the year (October 15th)", () => {
+    test("returns correct week number for late autumn", () => {
       const date = new Chronos("2025-10-15T00:00:00Z");
       expect(date.getWeekNumber()).toBe(42);
     });
   });
 
   describe(".isLeapYear", () => {
-    test("returns true for a typical leap year (2024)", () => {
+    test("returns true for typical leap year", () => {
       const date = new Chronos("2024-01-01T00:00:00Z");
       expect(date.isLeapYear()).toBe(true);
     });
 
-    test("returns false for a typical non-leap year (2023)", () => {
+    test("returns false for typical non-leap year", () => {
       const date = new Chronos("2023-01-01T00:00:00Z");
       expect(date.isLeapYear()).toBe(false);
     });
 
-    test("returns false for a century year that is not divisible by 400 (1900)", () => {
+    test("returns false for century year not divisible by 400", () => {
       const date = new Chronos("1900-01-01T00:00:00Z");
       expect(date.isLeapYear()).toBe(false);
     });
 
-    test("returns true for a century year that is divisible by 400 (2000)", () => {
+    test("returns true for century year divisible by 400", () => {
       const date = new Chronos("2000-01-01T00:00:00Z");
       expect(date.isLeapYear()).toBe(true);
     });
 
-    test("returns true for a recent leap year (2016)", () => {
+    test("returns true for recent leap year", () => {
       const date = new Chronos("2016-01-01T00:00:00Z");
       expect(date.isLeapYear()).toBe(true);
     });
 
-    test("returns false for a recent non-leap year (2017)", () => {
+    test("returns false for recent non-leap year", () => {
       const date = new Chronos("2017-01-01T00:00:00Z");
       expect(date.isLeapYear()).toBe(false);
     });
 
-    test("returns true for a future leap year (2080)", () => {
+    test("returns true for future leap year", () => {
       const date = new Chronos("2080-01-01T00:00:00Z");
       expect(date.isLeapYear()).toBe(true);
     });
 
-    test("returns false for a far future non-leap year (2100)", () => {
+    test("returns false for future non-leap year", () => {
       const date = new Chronos("2100-01-01T00:00:00Z");
       expect(date.isLeapYear()).toBe(false);
     });
   });
 
   describe(".diff", () => {
-    test("should calculate the difference correctly with default options", () => {
+    test("calculates difference with default units", () => {
       const diff = Chronos.diff("2023-01-01", "2023-06-30").inUnits();
       expect(diff).toEqual({
         years: 0,
@@ -412,7 +412,7 @@ describe("Chronos", () => {
       });
     });
 
-    test("should handle leap year difference correctly", () => {
+    test("handles leap year difference correctly", () => {
       const diff = Chronos.diff("2020-02-29", "2021-02-28").inUnits();
       expect(diff).toEqual({
         years: 0,
@@ -425,7 +425,7 @@ describe("Chronos", () => {
       });
     });
 
-    test("should handle leap year transition", () => {
+    test("handles leap year transition correctly", () => {
       const diff = Chronos.diff("2023-02-28", "2024-02-29").inUnits();
       expect(diff).toEqual({
         years: 1,
@@ -438,7 +438,7 @@ describe("Chronos", () => {
       });
     });
 
-    test("should calculate difference correctly for over 100 years", () => {
+    test("calculates difference for over 100 years", () => {
       const diff = Chronos.diff("1920-01-01", "2023-01-01").inUnits();
       expect(diff).toEqual({
         years: 103,
@@ -451,7 +451,7 @@ describe("Chronos", () => {
       });
     });
 
-    test("should handle reversed order of arguments", () => {
+    test("handles reversed date order correctly", () => {
       const diff = Chronos.diff("2023-06-30", "2023-01-01").inUnits();
       expect(diff).toEqual({
         years: 0,
@@ -464,7 +464,7 @@ describe("Chronos", () => {
       });
     });
 
-    test("should handle same date input", () => {
+    test("returns zero difference for same date", () => {
       const diff = Chronos.diff("2023-01-01", "2023-01-01").inUnits();
       expect(diff).toEqual({
         years: 0,
@@ -477,7 +477,7 @@ describe("Chronos", () => {
       });
     });
 
-    test("should handle exact year difference", () => {
+    test("calculates exact year difference correctly", () => {
       const diff = Chronos.diff("2020-01-01", "2023-01-01").inUnits();
       expect(diff).toEqual({
         years: 3,
@@ -490,7 +490,7 @@ describe("Chronos", () => {
       });
     });
 
-    test("should handle difference that includes a daylight saving transition", () => {
+    test("handles daylight saving time transition correctly", () => {
       const diff = Chronos.diff(
         "2023-03-25T23:00:00Z",
         "2023-03-26T02:00:00Z"
@@ -506,7 +506,7 @@ describe("Chronos", () => {
       });
     });
 
-    test("should handle difference across centuries", () => {
+    test("handles century transition correctly", () => {
       const diff = Chronos.diff("1899-12-31", "2000-01-01").inUnits();
       expect(diff).toEqual({
         years: 100,
@@ -519,7 +519,7 @@ describe("Chronos", () => {
       });
     });
 
-    test("should handle leap year single-day difference", () => {
+    test("handles single-day difference in leap year", () => {
       const diff = Chronos.diff("2024-02-28", "2024-02-29").inUnits();
       expect(diff).toEqual({
         years: 0,
@@ -532,7 +532,7 @@ describe("Chronos", () => {
       });
     });
 
-    test("should handle leap year to leap year difference", () => {
+    test("handles leap year to leap year difference", () => {
       const diff = Chronos.diff("2020-02-29", "2024-02-29").inUnits();
       expect(diff).toEqual({
         years: 4,
@@ -545,7 +545,7 @@ describe("Chronos", () => {
       });
     });
 
-    test("should handle 400-year difference", () => {
+    test("handles 400-year difference correctly", () => {
       const diff = Chronos.diff("1624-03-01", "2024-03-01").inUnits();
       expect(diff).toEqual({
         years: 400,
@@ -558,7 +558,7 @@ describe("Chronos", () => {
       });
     });
 
-    test("should handle daylight saving time transition in the same month", () => {
+    test("handles DST transition within same month", () => {
       const diff = Chronos.diff(
         "2023-03-25T22:00:00Z",
         "2023-03-26T02:00:00Z"
@@ -574,7 +574,7 @@ describe("Chronos", () => {
       });
     });
 
-    test("should handle partial year difference", () => {
+    test("handles partial year difference correctly", () => {
       const diff = Chronos.diff("2023-01-15", "2023-06-20").inUnits();
       expect(diff).toEqual({
         years: 0,
@@ -587,7 +587,7 @@ describe("Chronos", () => {
       });
     });
 
-    test("should handle month-end to month-start transition", () => {
+    test("handles month-end to month-start transition", () => {
       const diff = Chronos.diff("2023-01-31", "2023-02-01").inUnits();
       expect(diff).toEqual({
         years: 0,
@@ -600,7 +600,7 @@ describe("Chronos", () => {
       });
     });
 
-    test("should handle year transition without months", () => {
+    test("handles year transition without month change", () => {
       const diff = Chronos.diff("2022-12-15", "2023-01-15").inUnits();
       expect(diff).toEqual({
         years: 0,
@@ -613,7 +613,7 @@ describe("Chronos", () => {
       });
     });
 
-    test("should handle millennia difference", () => {
+    test("handles millennia difference correctly", () => {
       const diff = Chronos.diff("1024-05-20", "2024-05-20").inUnits();
       expect(diff).toEqual({
         years: 1000,
@@ -626,7 +626,7 @@ describe("Chronos", () => {
       });
     });
 
-    test("should calculate weeks and days together correctly", () => {
+    test("calculates weeks and days together correctly", () => {
       const diff = Chronos.diff("2023-06-01", "2023-08-15").inUnits();
       expect(diff).toEqual({
         years: 0,
@@ -639,7 +639,7 @@ describe("Chronos", () => {
       });
     });
 
-    test("should handle single-week difference", () => {
+    test("handles single-week difference correctly", () => {
       const diff = Chronos.diff("2023-09-01", "2023-09-08").inUnits();
       expect(diff).toEqual({
         years: 0,
