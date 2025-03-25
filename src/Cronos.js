@@ -1,4 +1,4 @@
-const Diff = require("./Diff");
+import Diff from "./Diff";
 
 /**
  * Chronos extends the native Date class to provide additional utility methods
@@ -6,7 +6,7 @@ const Diff = require("./Diff");
  *
  * @version 1.0.0
  */
-class Chronos extends Date {
+export default class Chronos extends Date {
   /**
    * Creates a sorted array of Chronos instances based on the given dates.
    *
@@ -15,7 +15,7 @@ class Chronos extends Date {
    * @returns {Chronos[]} An array of Chronos instances sorted in ascending order.
    *
    * @example
-   * const [date1, date2] = Chronos.sort('2023-01-01', '2023-06-30', false);
+   * const [date1, date2] = Chronos.sort('2023-01-01', '2023-06-30');
    * console.log(date1); // Tue Jan 01 2023 00:00:00 GMT+0000
    * console.log(date2); // Wed Jun 30 2023 00:00:00 GMT+0000
    *
@@ -32,21 +32,18 @@ class Chronos extends Date {
   /**
    * Calculates the difference between two dates with optional units.
    *
-   * @param {string | number | Date} start - First date.
-   * @param {string | number | Date} end - Second date.
+   * @param {string | number | Date | Chronos} start - First date.
+   * @param {string | number | Date | Chronos} end - Second date.
    *
-   * @returns {Interval} An object containing the difference in years, months, weeks, days, hours, minutes, seconds, and milliseconds.
+   * @returns {Diff} A Diff class for the date's differense manipulations
    *
    * @example
-   * const diff = Chronos.getDiff('2023-01-01', '2023-06-30', { withWeeks: true, withMonths: true });
-   * console.log(diff); // { years: 0, months: 5, weeks: 5, days: 0, hours: 0, minutes: 0, seconds: 0, milliseconds: 0 }
+   * const diff = Chronos.diff('2023-01-01', '2023-06-30', { withWeeks: true, withMonths: true });
+   * console.log(diff); // Diff
    *
    * @since 1.0.0
    */
   static diff(start, end) {
-    start = new Chronos(start).toUTC();
-    end = new Chronos(end).toUTC();
-
     return new Diff(start, end);
   }
 
@@ -398,7 +395,7 @@ class Chronos extends Date {
   /**
    * Checks if the current date is UTC.
    *
-   * @returns {boolean} True if the current date is UTC, false otherwise.
+   * @returns {boolean} True if the local date is UTC, false otherwise.
    *
    * @example
    * const date = new Chronos('2023-01-01');
@@ -464,5 +461,3 @@ class Chronos extends Date {
     return new Date(this);
   }
 }
-
-module.exports = Chronos;
