@@ -1,3 +1,3 @@
-import Chronos from "./src/Cronos";
+import Eonix from "./src/Eonix";
 
-export default Chronos;
+export default Eonix;

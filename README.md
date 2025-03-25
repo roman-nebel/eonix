@@ -1,4 +1,4 @@
-# Chronos
+# Eonix
 
 A modern JavaScript date manipulation library that extends the native Date class with powerful utility methods for date calculations, timezone conversions, and difference calculations.
 
@@ -15,47 +15,47 @@ A modern JavaScript date manipulation library that extends the native Date class
 ## Installation
 
 ```bash
-npm install chronos
+npm install Eonix
 ```
 
 ## Usage
 
 ```javascript
-import Chronos from "chronos";
+import Eonix from "eonix";
 
-// Create a new Chronos instance
-const date = new Chronos("2023-01-01");
+// Create a new Eonix instance
+const date = new Eonix("2023-01-01");
 
 // Add time to a date
 date.add({ years: 1, months: 2, days: 3 });
 
 // Calculate difference between dates
-const diff = Chronos.diff("2023-01-01", "2023-06-30");
+const diff = Eonix.diff("2023-01-01", "2023-06-30");
 console.log(diff.inMonths()); // 5
 console.log(diff.inDays()); // 180
 
 // Sort dates
-const [earlier, later] = Chronos.sort("2023-06-30", "2023-01-01");
+const [earlier, later] = Eonix.sort("2023-06-30", "2023-01-01");
 ```
 
 ## API Documentation
 
 ### Static Methods
 
-#### `Chronos.sort(...dates)`
+#### `Eonix.sort(...dates)`
 
-Creates a sorted array of Chronos instances based on the given dates.
+Creates a sorted array of Eonix instances based on the given dates.
 
 ```javascript
-const [date1, date2] = Chronos.sort("2023-01-01", "2023-06-30");
+const [date1, date2] = Eonix.sort("2023-01-01", "2023-06-30");
 ```
 
-#### `Chronos.diff(start, end)`
+#### `Eonix.diff(start, end)`
 
 Calculates the difference between two dates.
 
 ```javascript
-const diff = Chronos.diff("2023-01-01", "2023-06-30");
+const diff = Eonix.diff("2023-01-01", "2023-06-30");
 ```
 
 ### Instance Methods
@@ -94,7 +94,7 @@ const diff = Chronos.diff("2023-01-01", "2023-06-30");
 
 - `inUnits(units)` - Calculates the difference between two dates in specified units
   ```javascript
-  const diff = Chronos.diff("2023-01-01", "2023-06-30");
+  const diff = Eonix.diff("2023-01-01", "2023-06-30");
   const result = diff.inUnits(["years", "months", "days"]);
   // Result: { years: 0, months: 5, days: 29 }
   ```
@@ -117,7 +117,7 @@ const diff = Chronos.diff("2023-01-01", "2023-06-30");
 ### Date Arithmetic
 
 ```javascript
-const date = new Chronos("2023-01-01");
+const date = new Eonix("2023-01-01");
 date.add({ years: 1, months: 2, days: 3 });
 // Result: 2024-03-04
 ```
@@ -125,7 +125,7 @@ date.add({ years: 1, months: 2, days: 3 });
 ### Date Differences
 
 ```javascript
-const diff = Chronos.diff("2023-01-01", "2023-06-30");
+const diff = Eonix.diff("2023-01-01", "2023-06-30");
 console.log(diff.inMonths()); // 5
 console.log(diff.inDays()); // 180
 ```
@@ -133,14 +133,14 @@ console.log(diff.inDays()); // 180
 ### Timezone Conversion
 
 ```javascript
-const date = new Chronos("2023-01-01");
+const date = new Eonix("2023-01-01");
 date.convertToTimeZone(2); // Convert to UTC+2
 ```
 
 ### Leap Year Handling
 
 ```javascript
-const date = new Chronos("2020-02-29");
+const date = new Eonix("2020-02-29");
 console.log(date.isLeapYear()); // true
 ```
 

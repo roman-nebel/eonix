@@ -1,4 +1,4 @@
-import Chronos from "./Cronos";
+import Eonix from "./Eonix";
 
 /**
  * Diff is an additional class for calculation between two dates.
@@ -7,12 +7,12 @@ import Chronos from "./Cronos";
  */
 export default class Diff {
   constructor(start, end) {
-    const startChronos = new Chronos(start);
-    const endChronos = new Chronos(end);
+    const startEonix = new Eonix(start);
+    const endEonix = new Eonix(end);
 
-    this.isInversed = startChronos > endChronos;
+    this.isInversed = startEonix > endEonix;
 
-    const [earlierDate, laterDate] = Chronos.sort(startChronos, endChronos);
+    const [earlierDate, laterDate] = Eonix.sort(startEonix, endEonix);
 
     this.start = earlierDate;
     this.end = laterDate;
@@ -40,7 +40,7 @@ export default class Diff {
       ];
     }
 
-    const tempDate = new Chronos(this.start);
+    const tempDate = new Eonix(this.start);
     let diff = {};
 
     if (units.includes("years")) {
