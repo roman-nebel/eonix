@@ -1,5 +1,31 @@
 import Diff from "./Diff";
 
+type DateInput = string | number | Date | Eonix;
+type TimeZoneOffset = number;
+type CloneOptions = { offset?: TimeZoneOffset | null };
+type AddAmount = {
+  years?: number;
+  months?: number;
+  weeks?: number;
+  days?: number;
+  hours?: number;
+  minutes?: number;
+  seconds?: number;
+  milliseconds?: number;
+};
+type AddDateAmount = {
+  years?: number;
+  months?: number;
+  weeks?: number;
+  days?: number;
+};
+type AddTimeAmount = {
+  hours?: number;
+  minutes?: number;
+  seconds?: number;
+  milliseconds?: number;
+};
+
 /**
  * Eonix extends the native Date class to provide additional utility methods
  * for date manipulation, time zone conversions, and difference calculations.
@@ -21,11 +47,11 @@ export default class Eonix extends Date {
    *
    * @since 1.0.0
    */
-  static sort(...dates) {
+  static sort(...dates: DateInput[]): Eonix[] {
     if (dates.length === 0)
       throw new Error("Nothing to sort. Provide two or more date arguments.");
     return [...dates.flat().map((date) => new Eonix(date))].sort(
-      (a, b) => a - b
+      (a, b) => a.getTime() - b.getTime()
     );
   }
 
@@ -43,7 +69,7 @@ export default class Eonix extends Date {
    *
    * @since 1.0.0
    */
-  static diff(start, end) {
+  static diff(start: DateInput, end: DateInput): Diff {
     return new Diff(start, end);
   }
 
@@ -59,7 +85,7 @@ export default class Eonix extends Date {
    *
    * @since 1.0.0
    */
-  clone({ offset = null } = {}) {
+  clone({ offset = null }: CloneOptions = {}): Eonix {
     const cloned = new Eonix(this);
     if (offset !== null) {
       cloned.convertToTimeZone(offset);
@@ -89,7 +115,7 @@ export default class Eonix extends Date {
    *
    * @since 1.0.0
    */
-  add(amount) {
+  add(amount: AddAmount): Eonix {
     if (
       !amount ||
       typeof amount !== "object" ||
@@ -151,7 +177,12 @@ export default class Eonix extends Date {
    *
    * @since 1.0.0
    */
-  addDate({ years = 0, months = 0, weeks = 0, days = 0 }) {
+  addDate({
+    years = 0,
+    months = 0,
+    weeks = 0,
+    days = 0,
+  }: AddDateAmount): Eonix {
     return this.add({ years, months, weeks, days });
   }
 
@@ -173,7 +204,12 @@ export default class Eonix extends Date {
    *
    * @since 1.0.0
    */
-  addTime({ hours = 0, minutes = 0, seconds = 0, milliseconds = 0 }) {
+  addTime({
+    hours = 0,
+    minutes = 0,
+    seconds = 0,
+    milliseconds = 0,
+  }: AddTimeAmount): Eonix {
     return this.add({ hours, minutes, seconds, milliseconds });
   }
 
@@ -191,7 +227,7 @@ export default class Eonix extends Date {
    *
    * @since 1.0.0
    */
-  addYears(years) {
+  addYears(years: number): Eonix {
     return this.add({ years });
   }
 
@@ -209,7 +245,7 @@ export default class Eonix extends Date {
    *
    * @since 1.0.0
    */
-  addMonths(months) {
+  addMonths(months: number): Eonix {
     return this.add({ months });
   }
 
@@ -227,7 +263,7 @@ export default class Eonix extends Date {
    *
    * @since 1.0.0
    */
-  addWeeks(weeks) {
+  addWeeks(weeks: number): Eonix {
     return this.add({ weeks });
   }
 
@@ -245,7 +281,7 @@ export default class Eonix extends Date {
    *
    * @since 1.0.0
    */
-  addDays(days) {
+  addDays(days: number): Eonix {
     return this.add({ days });
   }
 
@@ -263,7 +299,7 @@ export default class Eonix extends Date {
    *
    * @since 1.0.0
    */
-  addHours(hours) {
+  addHours(hours: number): Eonix {
     return this.add({ hours });
   }
 
@@ -281,7 +317,7 @@ export default class Eonix extends Date {
    *
    * @since 1.0.0
    */
-  addMinutes(minutes) {
+  addMinutes(minutes: number): Eonix {
     return this.add({ minutes });
   }
 
@@ -299,7 +335,7 @@ export default class Eonix extends Date {
    *
    * @since 1.0.0
    */
-  addSeconds(seconds) {
+  addSeconds(seconds: number): Eonix {
     return this.add({ seconds });
   }
 
@@ -317,7 +353,7 @@ export default class Eonix extends Date {
    *
    * @since 1.0.0
    */
-  addMilliseconds(milliseconds) {
+  addMilliseconds(milliseconds: number): Eonix {
     return this.add({ milliseconds });
   }
 
@@ -333,7 +369,7 @@ export default class Eonix extends Date {
    *
    * @since 1.0.0
    */
-  getWeekday() {
+  getWeekday(): number {
     return ((this.getDay() + 6) % 7) + 1;
   }
 
@@ -349,7 +385,7 @@ export default class Eonix extends Date {
    *
    * @since 1.0.0
    */
-  getDayOfYear() {
+  getDayOfYear(): number {
     const startOfYear = new Eonix(Eonix.UTC(this.getFullYear(), 0, 1));
     return Math.floor((this.getTime() - startOfYear.getTime()) / 86400000) + 1;
   }
@@ -366,7 +402,7 @@ export default class Eonix extends Date {
    *
    * @since 1.0.0
    */
-  getWeekNumber() {
+  getWeekNumber(): number {
     const jan4 = new Eonix(Eonix.UTC(this.getFullYear(), 0, 4));
 
     const firstMonday = new Eonix(jan4);
@@ -387,7 +423,7 @@ export default class Eonix extends Date {
    *
    * @since 1.0.0
    */
-  isLeapYear() {
+  isLeapYear(): boolean {
     const year = this.getFullYear();
     return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
   }
@@ -404,7 +440,7 @@ export default class Eonix extends Date {
    *
    * @since 1.0.0
    */
-  isUTC() {
+  isUTC(): boolean {
     return this.getTimezoneOffset() === 0;
   }
 
@@ -420,7 +456,7 @@ export default class Eonix extends Date {
    *
    * @since 1.0.0
    */
-  convertToUTC() {
+  convertToUTC(): Eonix {
     const utcTime = this.getTime() + this.getTimezoneOffset() * 60000;
     this.setTime(utcTime);
     return this;
@@ -440,7 +476,7 @@ export default class Eonix extends Date {
    *
    * @since 1.0.0
    */
-  convertToTimeZone(newOffset) {
+  convertToTimeZone(newOffset: TimeZoneOffset): Eonix {
     this.setTime(this.getTime() - newOffset * 3600000);
     return this;
   }
@@ -457,7 +493,7 @@ export default class Eonix extends Date {
    *
    * @since 1.0.0
    */
-  toDate() {
+  toDate(): Date {
     return new Date(this);
   }
 }

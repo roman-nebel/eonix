@@ -1,4 +1,4 @@
-import Eonix from "../index.js";
+import Eonix from "../lib/index.js";
 
 describe("Eonix", () => {
   describe(".clone", () => {

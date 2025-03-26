@@ -1,12 +1,32 @@
 import Eonix from "./Eonix";
 
+type Unit =
+  | "years"
+  | "months"
+  | "weeks"
+  | "days"
+  | "hours"
+  | "minutes"
+  | "seconds"
+  | "milliseconds";
+type DiffOptions = { absolute?: boolean };
+type DiffUnits = Unit[];
+type DiffResult = Partial<Record<Unit, number>>;
+
 /**
  * Diff is an additional class for calculation between two dates.
  *
  * @version 1.0.0
  */
 export default class Diff {
-  constructor(start, end) {
+  private isInversed: boolean;
+  private start: Eonix;
+  private end: Eonix;
+
+  constructor(
+    start: string | number | Date | Eonix,
+    end: string | number | Date | Eonix
+  ) {
     const startEonix = new Eonix(start);
     const endEonix = new Eonix(end);
 
@@ -27,7 +47,7 @@ export default class Diff {
    *
    * @since 1.0.0
    */
-  inUnits(units) {
+  inUnits(units?: DiffUnits): DiffResult {
     if (!units || !Array.isArray(units) || units.length === 0) {
       units = [
         "years",
@@ -41,7 +61,7 @@ export default class Diff {
     }
 
     const tempDate = new Eonix(this.start);
-    let diff = {};
+    let diff: DiffResult = {};
 
     if (units.includes("years")) {
       const years = new Diff(tempDate, this.end).inYears();
@@ -85,7 +105,7 @@ export default class Diff {
       tempDate.addSeconds(seconds);
     }
 
-    if (units.includes("milliseconds") || returns.length === 0) {
+    if (units.includes("milliseconds") || units.length === 0) {
       const milliseconds = new Diff(tempDate, this.end).inMilliseconds();
       diff.milliseconds = milliseconds;
     }
@@ -103,8 +123,10 @@ export default class Diff {
    *
    * @since 1.0.0
    */
-  inMilliseconds({ absolute = false } = {}) {
-    const milliseconds = Math.floor((this.end - this.start) / 1);
+  inMilliseconds({ absolute = false }: DiffOptions = {}): number {
+    const milliseconds = Math.floor(
+      (this.end.getTime() - this.start.getTime()) / 1
+    );
     return this.isInversed ?? !absolute ? -milliseconds : milliseconds;
   }
 
@@ -118,8 +140,10 @@ export default class Diff {
    *
    * @since 1.0.0
    */
-  inSeconds({ absolute = false } = {}) {
-    const seconds = Math.floor((this.end - this.start) / 1000);
+  inSeconds({ absolute = false }: DiffOptions = {}): number {
+    const seconds = Math.floor(
+      (this.end.getTime() - this.start.getTime()) / 1000
+    );
     return this.isInversed ?? !absolute ? -seconds : seconds;
   }
 
@@ -133,8 +157,10 @@ export default class Diff {
    *
    * @since 1.0.0
    */
-  inMinutes({ absolute = false } = {}) {
-    const minutes = Math.floor((this.end - this.start) / 60000);
+  inMinutes({ absolute = false }: DiffOptions = {}): number {
+    const minutes = Math.floor(
+      (this.end.getTime() - this.start.getTime()) / 60000
+    );
     return this.isInversed ?? !absolute ? -minutes : minutes;
   }
 
@@ -148,8 +174,10 @@ export default class Diff {
    *
    * @since 1.0.0
    */
-  inHours({ absolute = false } = {}) {
-    const hours = Math.floor((this.end - this.start) / 3600000);
+  inHours({ absolute = false }: DiffOptions = {}): number {
+    const hours = Math.floor(
+      (this.end.getTime() - this.start.getTime()) / 3600000
+    );
     return this.isInversed ?? !absolute ? -hours : hours;
   }
 
@@ -163,8 +191,10 @@ export default class Diff {
    *
    * @since 1.0.0
    */
-  inDays({ absolute = false } = {}) {
-    const days = Math.floor((this.end - this.start) / 86400000);
+  inDays({ absolute = false }: DiffOptions = {}): number {
+    const days = Math.floor(
+      (this.end.getTime() - this.start.getTime()) / 86400000
+    );
     return this.isInversed ?? !absolute ? -days : days;
   }
 
@@ -178,8 +208,10 @@ export default class Diff {
    *
    * @since 1.0.0
    */
-  inWeeks({ absolute = false } = {}) {
-    const weeks = Math.floor((this.end - this.start) / 604800000);
+  inWeeks({ absolute = false }: DiffOptions = {}): number {
+    const weeks = Math.floor(
+      (this.end.getTime() - this.start.getTime()) / 604800000
+    );
     return this.isInversed ?? !absolute ? -weeks : weeks;
   }
 
@@ -193,7 +225,7 @@ export default class Diff {
    *
    * @since 1.0.0
    */
-  inMonths({ absolute = false } = {}) {
+  inMonths({ absolute = false }: DiffOptions = {}): number {
     let years = this.inYears();
     let months = this.end.getMonth() - this.start.getMonth();
 
@@ -212,9 +244,9 @@ export default class Diff {
       years++;
     }
 
-    const totaMonths = months + years * 12;
+    const totalMonths = months + years * 12;
 
-    return this.isInversed ?? !absolute ? -totaMonths : totaMonths;
+    return this.isInversed ?? !absolute ? -totalMonths : totalMonths;
   }
 
   /**
@@ -227,7 +259,7 @@ export default class Diff {
    *
    * @since 1.0.0
    */
-  inYears({ absolute = false } = {}) {
+  inYears({ absolute = false }: DiffOptions = {}): number {
     let years = this.end.getFullYear() - this.start.getFullYear();
 
     if (years === 0) return 0;

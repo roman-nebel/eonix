@@ -1,4 +1,4 @@
-import Diff from "../src/Diff.js";
+import Diff from "../lib/Diff.js";
 
 describe("Diff", () => {
   describe(".inYears", () => {
