@@ -1,4 +1,4 @@
-import Diff from "../lib/Diff/Diff.js";
+const Diff = require("../lib/Diff/Diff.js");
 
 describe("Diff", () => {
   describe(".inYears", () => {

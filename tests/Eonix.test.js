@@ -1,4 +1,4 @@
-import Eonix from "../lib/Eonix/Eonix.js";
+const Eonix = require("../lib/index.js");
 
 describe("Eonix", () => {
   describe(".clone", () => {
