@@ -1,3 +1,3 @@
-import Eonix from "../lib/Eonix.js";
+import Eonix from "./Eonix/Eonix.js";
 
 export default Eonix;

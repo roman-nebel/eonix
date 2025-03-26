@@ -7,8 +7,8 @@
   "type": "module",
   "exports": {
     ".": {
-      "import": "./lib/index.mjs",
-      "require": "./lib/index.cjs"
+      "import": "./lib/index.js",
+      "require": "./lib/index.js"
     }
   },
   "files": [

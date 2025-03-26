@@ -1,4 +1,4 @@
-import Eonix from "./Eonix";
+import Eonix from "../Eonix/Eonix.js";
 
 type Unit =
   | "years"

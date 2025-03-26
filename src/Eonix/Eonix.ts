@@ -1,4 +1,4 @@
-import Diff from "./Diff";
+import Diff from "../Diff/Diff.js";
 
 type DateInput = string | number | Date | Eonix;
 type TimeZoneOffset = number;
