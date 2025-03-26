@@ -1,12 +1,14 @@
 {
   "name": "eonix",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "A modern date manipulation library for JavaScript and TypeScript",
   "main": "lib/index.js",
+  "types": "lib/Eonix/Eonix.d.ts",
   "exports": {
     ".": {
       "require": "./lib/index.js",
-      "default": "./lib/index.js"
+      "default": "./lib/index.js",
+      "types": "./lib/Eonix/Eonix.d.ts"
     }
   },
   "files": [
