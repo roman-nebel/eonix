@@ -36,7 +36,7 @@ declare class Eonix extends Date {
   /**
    * Creates a sorted array of Eonix instances based on the given dates.
    *
-   * @param {...(string | number | Date | Eonix)} dates - Dates to include in the sorting.
+   * @param {...(DateInput)} dates - Dates to include in the sorting.
    *
    * @returns {Eonix[]} An array of Eonix instances sorted in ascending order.
    *
@@ -51,8 +51,8 @@ declare class Eonix extends Date {
   /**
    * Calculates the difference between two dates with optional units.
    *
-   * @param {string | number | Date | Eonix} start - First date.
-   * @param {string | number | Date | Eonix} end - Second date.
+   * @param {DateInput} start - First date.
+   * @param {DateInput} end - Second date.
    *
    * @returns {Diff} A Diff class for the date's differense manipulations
    *
@@ -350,6 +350,23 @@ declare class Eonix extends Date {
    * @since 1.0.0
    */
   convertToTimeZone(newOffset: TimeZoneOffset): Eonix;
+  /**
+   * Check if date is in date range.
+   *
+   * @param {DateInput} start - First date.
+   * @param {DateInput} end - Second date.
+   *
+   * @returns {boolean} True if the date is in the range, false otherwise.
+   *
+   * @example
+   * const date = new Eonix('2023-06-15');
+   * const start = new Eonix('2023-06-01');
+   * const end = new Eonix('2023-06-30');
+   * console.log(date.inRange(start, end)); // true
+   *
+   * @since 1.3.0
+   */
+  convertToTimeZone(start: DateInput, end: DateInput, options?: {includeStart?: boolean, includeEnd?: boolean}): Eonix;
   /**
    * Converts the current date to a Date object.
    *
