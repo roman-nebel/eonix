@@ -28,6 +28,7 @@ const date = new Eonix("2023-01-01");
 
 // Add time to a date
 date.add({ years: 1, months: 2, days: 3 });
+console.log(date); // 2024-03-04
 
 // Calculate difference between dates
 const diff = Eonix.diff("2023-01-01", "2023-06-30");
@@ -142,6 +143,15 @@ date.convertToTimeZone(2); // Convert to UTC+2
 ```javascript
 const date = new Eonix("2020-02-29");
 console.log(date.isLeapYear()); // true
+```
+
+### Check if date is in date range
+
+```javascript
+const date = new Eonix('2023-06-15');
+const start = new Eonix('2023-06-01');
+const end = new Eonix('2023-06-30');
+console.log(date.inRange(start, end)); // true
 ```
 
 ## License

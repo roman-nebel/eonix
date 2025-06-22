@@ -652,4 +652,57 @@ describe("Eonix", () => {
       });
     });
   });
+
+  describe('.inRange', () => {
+    test('returns true for date within range', () => {
+      const date = new Eonix('2023-06-15');
+      const start = new Eonix('2023-06-01');
+      const end = new Eonix('2023-06-30');
+      expect(date.inRange(start, end)).toBe(true);
+    });
+
+    test('returns false for date before range', () => {
+      const date = new Eonix('2023-05-31');
+      const start = new Eonix('2023-06-01');
+      const end = new Eonix('2023-06-30');
+      expect(date.inRange(start, end)).toBe(false);
+    });
+
+    test('returns false for date after range', () => {
+      const date = new Eonix('2023-07-01');
+      const start = new Eonix('2023-06-01');
+      const end = new Eonix('2023-06-30');
+      expect(date.inRange(start, end)).toBe(false);
+    });
+
+    test('returns true for date equal to start of range', () => {
+      const date = new Eonix('2023-06-01');
+      const start = new Eonix('2023-06-01');
+      const end = new Eonix('2023-06-30');
+      expect(date.inRange(start, end)).toBe(true);
+      expect(date.inRange(start, end, {includeStart: false})).toBe(false);
+    });
+
+    test('returns true for date equal to end of range', () => {
+      const date = new Eonix('2023-06-30');
+      const start = new Eonix('2023-06-01');
+      const end = new Eonix('2023-06-30');
+      expect(date.inRange(start, end)).toBe(true);
+      expect(date.inRange(start, end, {includeEnd: false})).toBe(false);
+    });
+
+    test('handles empty range correctly', () => {
+      const date = new Eonix('2023-06-15');
+      const start = new Eonix('2023-06-15');
+      const end = new Eonix('2023-06-15');
+      expect(date.inRange(start, end)).toBe(true);
+    });
+
+    test('returns false for invalid range where start is after end', () => {
+      const date = new Eonix('2023-06-15');
+      const start = new Eonix('2023-06-30');
+      const end = new Eonix('2023-06-01');
+      expect(date.inRange(start, end)).toBe(false);
+    });
+  })
 });
