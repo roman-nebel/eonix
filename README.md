@@ -15,7 +15,7 @@ A modern JavaScript date manipulation library that extends the native Date class
 ## Installation
 
 ```bash
-npm install Eonix
+npm install eonix
 ```
 
 ## Usage
@@ -82,6 +82,7 @@ const diff = Eonix.diff("2023-01-01", "2023-06-30");
 - `getWeekNumber()` - Returns week number
 - `isLeapYear()` - Checks if date is in a leap year
 - `isUTC()` - Checks if date is in UTC
+- `inRange()` - Checks if date is in date range
 
 #### Timezone Operations
 
